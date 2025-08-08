@@ -2,60 +2,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>雲隠深情 | 作品一覧</title>
-<style>
-/* カード全体 */
-.card{
-  display:inline-block;
-  margin:1rem;
-  text-align:center;
-  vertical-align:top;
-  width:150px;
+/* 雲（カード内だけ／少し薄め） */
+.card::before{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:8px; height:46%;
+  background:url("./assets/clouds.png") center bottom / 140% auto no-repeat;
+  opacity:.28;           /* ← 薄く */
+  pointer-events:none;
+  z-index:1;             /* ← 雲は最背面寄り */
 }
 
-/* アイコン部分（雲と重ならないよう余白確保） */
+/* アイコン一式（ポップの分だけ下に空ける） */
 .icon-wrap{
   position:relative;
   display:inline-block;
-  z-index:10;            /* ポップアップより前に表示される要素を管理 */
-  padding-bottom:44px;   /* 名前や雲のための余白 */
+  z-index:20;            /* pop よりは低い／name よりは高い */
+  padding-bottom:64px;   /* ← PCでの余白を増やす（以前 44px） */
 }
 
-/* アイコン画像 */
-.icon{
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  overflow:hidden;
-  border:3px solid #67A7BA; /* R103 G167 B186 */
-  position:relative;
-  z-index:2;
-}
-
-/* 雲の背景（薄め） */
-.icon-wrap::after{
-  content:"";
+/* ポップアップは最前面に */
+.pop{
   position:absolute;
-  bottom:0;
   left:50%;
-  transform:translateX(-50%);
-  width:160px;
-  height:60px;
-  background:url("assets/clouds.png") no-repeat center;
-  background-size:contain;
-  opacity:0.35; /* ★色薄く */
-  z-index:1;
+  top:calc(100% + 8px);
+  transform:translateX(-50%) scale(.98);
+  opacity:0; pointer-events:none;
+  background:#fff; border:1px solid var(--ring); border-radius:10px;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+  padding:.5rem .6rem; white-space:nowrap;
+  z-index:100;           /* ← 最前面に固定 */
+  transition:opacity .15s, transform .15s;
 }
 
-/* 名前（白縁取り＋下の層に固定） */
+/* 名前は雲より上、ポップより下。少し間隔も取る */
 .name{
-  font-size:.95rem;
-  font-weight:800;
-  margin:.35rem 0 .4rem;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  position:relative;
-  z-index:0; /* ★必ずポップより下に */
+  font-size:.95rem; font-weight:800;
+  margin:.55rem 0 .4rem;                 /* ← ちょい下げる */
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  position:relative; z-index:10;         /* ← 雲より前、popより後ろ */
   color:#222 !important;
   -webkit-text-stroke:2px #fff;
   text-shadow:
@@ -63,41 +48,13 @@
     1px 1px #fff,-1px 1px #fff,1px -1px #fff,-1px -1px #fff;
 }
 
-/* ポップアップ */
-.pop{
-  position:absolute;
-  bottom:0;
-  left:50%;
-  transform:translate(-50%, 100%);
-  display:flex;
-  gap:.5rem;
-  z-index:50; /* ★最前面 */
+/* スマホはさらに余白を増やす（ボタンが2行になっても重ならない） */
+@media (max-width:520px){
+  .gallery{grid-template-columns:repeat(2,160px)}
+  .card{width:160px}
+  .icon-wrap{padding-bottom:82px;}      /* ← ここが効きます */
 }
 
-/* ボタン */
-.pill{
-  display:inline-block;
-  padding:.25rem .75rem;
-  border-radius:999px;
-  background-color:transparent;
-  border:2px solid #67A7BA;
-  color:#67A7BA;
-  text-decoration:none;
-  font-size:.85rem;
-  font-weight:bold;
-}
-
-.pill:hover{
-  background-color:#67A7BA;
-  color:white;
-}
-
-/* 見出しのカウンター */
-.counter{
-  font-size:1.2rem;
-  font-weight:bold;
-}
-</style>
 
 </head>
 <body>
@@ -211,4 +168,5 @@ function createCard({icon,name,twitter,work,feedback}){
 })();
 </script>
 </body></html>
+
 
