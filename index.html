@@ -1,76 +1,68 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>雲隠深情｜作品一覧</title>
 <style>
   :root{
-    --bg:#fff;
+    --bg:#ffffff;
     --text:#111;
     --muted:#666;
-    --ring:#9fd0df;
-    --accent: rgb(103,167,186);
-    --card-w:160px;
-    --card-h:190px;
-    --icon:100px;
-    --gap:28px;
-    --radius:14px;
+    --ring:#67a7ba;            /* R103 G167 B186 */
+    --pill:#67a7ba;            /* ボタン色（統一） */
+    --card:#fff;
+    --shadow:0 8px 26px rgba(0,0,0,.08);
   }
-
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Noto Sans JP","Meiryo",sans-serif}
-
-  header{ text-align:center; padding:18px 16px 6px }
-  header img{ width:min(560px,86vw); height:auto; display:block; margin:0 auto }
-
-  h1{ display:none }
-  h2{ text-align:center; margin:10px 0 4px; font-size:clamp(18px,3.7vw,26px)}
-  .desc{ text-align:center; color:var(--muted); font-size:.95rem; margin:0 0 10px }
-
-  .counter{ text-align:center; margin:8px 0 22px; font-weight:700; font-size:clamp(16px,3.6vw,20px)}
-  .counter .num{ font-variant-numeric: tabular-nums; letter-spacing:.06em }
-
-  .gallery{
-    display:grid;
-    grid-template-columns: repeat(4, var(--card-w));
-    gap: var(--gap);
-    justify-content:center;
-    padding: 6px 16px 60px;
-  }
-  @media (max-width:680px){
-    .gallery{ grid-template-columns: repeat(2, var(--card-w)); gap:22px }
-  }
-
-  .card{
-    width:var(--card-w);
-    height:var(--card-h);
-    background:#fff;
-    border:1px solid #e9eef2;
-    border-radius:var(--radius);
-    box-shadow:0 1px 2px rgba(0,0,0,.04);
-    padding:10px 6px 8px;
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
     text-align:center;
-    position:relative;
-  }
-  .card:focus-within,
-  .card:hover{
-    transform:translateY(-2px);
-    transition:transform .12s ease;
-    box-shadow:0 10px 24px rgba(0,0,0,.08);
   }
 
-  .icon-wrap{ position:relative; display:inline-block; }
+  /* ヘッダー（ロゴは大きすぎないように抑える） */
+  header{padding:18px 12px 4px}
+  header img{width:min(90%,680px); height:auto; display:block; margin:0 auto;}
+
+  h1{font-size:clamp(20px,3.6vw,28px); margin:10px 0 6px}
+  .desc{color:var(--muted); font-size:.95rem; margin:0 0 6px}
+
+  /* カウンター */
+  .counter{font-weight:700; font-size:clamp(16px,2.8vw,20px); margin:10px 0 18px}
+  .counter .num{letter-spacing:.06em}
+
+  /* ギャラリー（PC=4列、スマホ=2列固定） */
+  .wrap{max-width:1000px; margin:0 auto; padding:0 14px 40px}
+  .gallery{
+    display:grid; gap:22px;
+    grid-template-columns: repeat(4, 1fr);
+    place-items:center;
+  }
+  @media (max-width: 720px){
+    .gallery{grid-template-columns: repeat(2, 1fr); gap:18px}
+  }
+
+  /* カード：正方形寄り＆コンパクト（固定幅） */
+  .card{
+    width: 220px; height: 240px;      /* ←ここでほぼ正方形に寄せています */
+    background:var(--card);
+    border-radius:16px; box-shadow:var(--shadow);
+    position:relative; padding:12px 10px;
+  }
+  @media (max-width: 720px){
+    .card{width: 180px; height: 204px}
+  }
+
+  /* アイコン（リンクなし・ホバー影だけ） */
+  .icon-wrap{position:relative; display:inline-block; z-index:2}
   .icon{
-    width:var(--icon);
-    height:var(--icon);
-    border-radius:50%;
-    display:block;
-    object-fit:cover;
-    background:#f3f4f6;
-    filter:drop-shadow(0 0 0 var(--ring));
-    border:2px solid #cfe8f2;
-    transition: transform .18s, box-shadow .18s;
+    width:96px; height:96px; border-radius:50%;
+    object-fit:cover; background:#f3f4f6; display:block; margin:0 auto;
+    transition:transform .18s, box-shadow .18s, filter .18s;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    border:2px solid #cae5f0;
+    filter: saturate(1.02);
   }
   .card:hover .icon,
   .card:focus-within .icon{
@@ -78,214 +70,153 @@
     box-shadow:0 12px 28px rgba(0,0,0,.12);
   }
 
+  /* ポップアップ（アイコンの少し下：名前の少し上） */
   .pop{
-    position:absolute;
-    left:50%;
-    top:62%;
-    transform:translateX(-50%) scale(.98);
-    background:#fff;
-    border:1px solid var(--ring);
-    border-radius:10px;
-    padding:.38rem .5rem;
-    display:flex;
-    gap:.4rem;
-    box-shadow:0 10px 24px rgba(0,0,0,.08);
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .16s, transform .16s;
-    z-index:10;
-    white-space:nowrap;
+    position:absolute; left:50%;
+    top: calc(50% + 22px);             /* ↓センターより少し下へ */
+    transform: translate(-50%,-50%);
+    background:#fff; border:1px solid var(--ring);
+    border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.08);
+    padding:.32rem .48rem; white-space:nowrap;
+    z-index:20; display:flex; gap:.4rem; opacity:0;
+    pointer-events:none; transition:opacity .15s, transform .15s;
   }
   .card:hover .pop,
-  .card.pop-open .pop{ opacity:1; transform:translateX(-50%) scale(1); pointer-events:auto }
+  .card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
   .pill{
-    display:inline-block;
-    min-width:46px;
-    padding:.28rem .56rem;
-    border-radius:999px;
-    font-size:.85rem;
-    text-decoration:none;
-    color:var(--accent);
-    border:1px solid var(--accent);
-    background:#f8fafc;
-    line-height:1;
-    transition: background .12s, color .12s, border-color .12s;
+    display:inline-block; font-size:.85rem;
+    padding:.28rem .64rem; border-radius:999px;
+    border:1px solid var(--pill); color:var(--pill); text-decoration:none;
+    background:#f8fafc; transition:background .12s, border-color .12s, color .12s;
   }
-  .pill:hover{ background: rgba(103,167,186,.15) }
+  .pill:hover{ background:rgba(103,167,186,.15); border-color:var(--pill); color:var(--pill); }
 
-  .name{
-    position:absolute;
-    left:0; right:0;
-    bottom:8px;
-    padding:0 .5rem;
-    font-weight:700;
-    font-size:.95rem;
-    line-height:1.1;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    color: var(--text);
-    text-decoration: none; /* リンクでも下線なし */
-  }
-  .name a{
-    color: inherit; /* 黒のまま */
-    text-decoration: none;
-  }
+  /* 名前（黒のままリンク → Xへ） */
+  .name{ margin:.46rem 0 0; font-weight:700; font-size:.98rem }
+  .name a{ color:#000; text-decoration:none }
+  .name a:focus-visible{ outline:2px solid var(--ring); outline-offset:3px; border-radius:6px }
 
-  footer{ text-align:center; color:#777; font-size:.9rem; padding: 16px 0 26px }
+  /* スマホでの誤タップ対策：カード内の余白も押しやすい */
+  .hit{ position:absolute; inset:0; }
+
+  /* 横スクロール抑止（安全マージン） */
+  html, body{ overflow-x:hidden }
 </style>
 </head>
 <body>
-<header>
-  <img src="assets/title.jpg" alt="雲隠深情">
-</header>
 
-<h1>雲隠深情</h1>
-<h2>作品一覧</h2>
-<p class="desc">アイコン＝影のみ、名前＝Twitter、ポップアップのボタン＝作品・感想</p>
+  <header>
+    <img src="assets/title.jpg" alt="雲隠深情" />
+  </header>
 
-<p class="counter">あなたは「<span id="visitor" class="num">000000</span>」人目の姑蘇藍氏の先輩</p>
+  <div class="wrap">
+    <h1>作品一覧</h1>
+    <p class="desc">アイコン＝Twitter、ポップアップのボタン＝作品・感想</p>
+    <p class="counter">あなたは「<span id="visitor" class="num">000000</span>」人目の姑蘇藍氏の弟子</p>
 
-<div id="gallery" class="gallery" aria-live="polite"></div>
+    <div id="gallery" class="gallery" aria-live="polite"></div>
 
-<footer>雲隠探情企画 / 主催はくと</footer>
+    <p style="margin:26px 0 0; color:#666; font-size:.9rem;">雲隠深情企画 / 主催はくと</p>
+  </div>
 
 <script>
+/* ====== 設定（必要に応じて差し替え） ====== */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
-const ICON_EXTS = ["png", "jpg", "jpeg", "webp"];
+/* A:アイコン名(01～32).png / B:名前 / C:Xリンク / D:作品リンク / E:感想リンク */
+const ICON_PATH = "icons/";             // アイコン画像フォルダ
+const ICON_EXT  = ".png";
 
+/* ====== 訪問カウンター（localStorage） ====== */
 (function(){
-  const el = document.getElementById('visitor');
-  let n = Number(localStorage.getItem('visitCount') || 0) + 1;
-  localStorage.setItem('visitCount', n);
-  el.textContent = String(n).padStart(6,'0');
+  try{
+    const k = "visitCount_gallery";
+    const n = (parseInt(localStorage.getItem(k) || "0", 10) + 1);
+    localStorage.setItem(k, String(n));
+    document.getElementById("visitor").textContent = String(n).padStart(6, "0");
+  }catch(e){}
 })();
+
+/* ====== CSV 読み込み・描画 ====== */
+async function loadCSV(url){
+  const res = await fetch(url, {cache:"no-store"});
+  const text = await res.text();
+  // シンプルCSVパーサ（カンマ・改行のみ想定）
+  const rows = text.split(/\r?\n/).map(r => r.split(","));
+  // 先頭行もデータとして扱い、完全な空行だけ除外
+  return rows.filter(r => r.join("").trim() !== "");
+}
+
+function makeCard([iconBase, name, xUrl, workUrl, fbUrl]){
+  const fig  = document.createElement("div");
+  fig.className = "card";
+
+  // アイコン（リンクなし・ホバー影だけ）
+  const iw = document.createElement("div"); iw.className = "icon-wrap";
+  const img = document.createElement("img");
+  img.className = "icon";
+  img.src = ICON_PATH + String(iconBase).trim() + ICON_EXT;
+  img.alt = name || "";
+  iw.appendChild(img);
+
+  // ポップアップ（横並びボタン）
+  const pop = document.createElement("div"); pop.className = "pop";
+  const toWork = document.createElement("a");
+  toWork.className = "pill"; toWork.textContent = "作品";
+  toWork.href = workUrl || "#"; toWork.target = "_blank"; toWork.rel="noopener";
+  const toFb = document.createElement("a");
+  toFb.className = "pill"; toFb.textContent = "感想";
+  toFb.href = fbUrl || "#"; toFb.target = "_blank"; toFb.rel="noopener";
+  pop.appendChild(toWork); pop.appendChild(toFb);
+
+  // 名前（黒リンクでXへ）
+  const nameEl = document.createElement("div"); nameEl.className = "name";
+  const na = document.createElement("a");
+  na.textContent = name || "";
+  if(xUrl && xUrl.trim()) { na.href = xUrl.trim(); na.target = "_blank"; na.rel="noopener"; }
+  nameEl.appendChild(na);
+
+  // カードに追加
+  fig.appendChild(iw);
+  fig.appendChild(pop);
+  fig.appendChild(nameEl);
+
+  // タッチ：1回目でポップアップ表示、2回目以降はタップ先へ
+  fig.addEventListener("touchstart", (e)=>{
+    if(!fig.classList.contains("pop-open")){
+      fig.classList.add("pop-open");
+      setTimeout(()=>fig.classList.remove("pop-open"), 1100);
+      e.preventDefault();
+    }
+  }, {passive:false});
+
+  // Escで閉じる（フォーカス時）
+  fig.addEventListener("keydown", e=>{
+    if(e.key==="Escape") fig.classList.remove("pop-open");
+  });
+
+  return fig;
+}
 
 (async function init(){
-  const rows = await loadCSV(CSV_URL);
-  const data = [];
-  for(const r of rows){
-    if(!r) continue;
-    const A = (r[0]||"").trim();
-    const B = (r[1]||"").trim();
-    const C = (r[2]||"").trim();
-    const D = (r[3]||"").trim();
-    const E = (r[4]||"").trim();
-    if(!A && !B && !C && !D && !E) continue;
-    const joined = (A+B+C+D+E).toLowerCase();
-    if(/icon|アイコン|name|名前|twitter|作品|感想/.test(joined)) continue;
-    data.push({icon:A,name:B,x:C,work:D,fb:E});
-  }
-  render(data);
+  const list = await loadCSV(CSV_URL);
+  const host = document.getElementById("gallery");
+  host.innerHTML = "";
+
+  // 32件に満たない場合の安全策
+  list.slice(0, 32).forEach(row=>{
+    // [A,B,C,D,E] に足りない分は空文字で埋める
+    const a = (row[0]||"").trim();
+    const b = (row[1]||"").trim();
+    const c = (row[2]||"").trim();
+    const d = (row[3]||"").trim();
+    const e = (row[4]||"").trim();
+    // アイコン名が "01" のようなゼロ詰めでなければ補正
+    const iconBase = a.replace(/\.(png|jpg|jpeg|webp)$/i,"");
+    host.appendChild( makeCard([iconBase, b, c, d, e]) );
+  });
 })();
-
-async function loadCSV(url){
-  const text = await fetch(url, {cache:"no-store"}).then(r=>r.text());
-  const lines = text.replace(/\r/g,'\n').split('\n').filter(l=>l.trim().length>0);
-  const splitter = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/g;
-  return lines.map(line=>{
-    return line.split(splitter).map(cell=>{
-      cell = cell.trim();
-      if(cell.startsWith('"') && cell.endsWith('"')){
-        cell = cell.slice(1,-1).replace(/""/g,'"');
-      }
-      return cell;
-    });
-  });
-}
-
-function render(items){
-  const wrap = document.getElementById('gallery');
-  wrap.textContent = '';
-
-  items.forEach((it, idx)=>{
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    const iconWrap = document.createElement('div');
-    iconWrap.className = 'icon-wrap';
-
-    const img = document.createElement('img');
-    img.className = 'icon';
-
-    let base = (it.icon || String(idx+1)).trim();
-    let explicitExt = '';
-    const dot = base.lastIndexOf('.');
-    if(dot>0){ explicitExt = base.slice(dot+1).toLowerCase(); base = base.slice(0,dot); }
-
-    const sources = explicitExt ? [explicitExt] : ICON_EXTS;
-    let srcIdx = 0;
-    img.src = `icons/${base}.${sources[srcIdx]}`;
-    img.alt = it.name || '';
-    img.onerror = function(){
-      srcIdx++;
-      if(srcIdx < sources.length){
-        img.src = `icons/${base}.${sources[srcIdx]}`;
-      }
-    };
-
-    // アイコンにはリンクなし（影やホバー効果はCSSで残す）
-    iconWrap.appendChild(img);
-    card.appendChild(iconWrap);
-
-    const pop = document.createElement('div');
-    pop.className = 'pop';
-    if(it.work){
-      const a = document.createElement('a');
-      a.className = 'pill';
-      a.textContent = '作品';
-      a.href = it.work;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      pop.appendChild(a);
-    }
-    if(it.fb){
-      const b = document.createElement('a');
-      b.className = 'pill';
-      b.textContent = '感想';
-      b.href = it.fb;
-      b.target = '_blank';
-      b.rel = 'noopener';
-      pop.appendChild(b);
-    }
-    card.appendChild(pop);
-
-    // 名前をリンクに変更（色は黒のまま）
-    const name = document.createElement('div');
-    name.className = 'name';
-    if(it.x){
-      const link = document.createElement('a');
-      link.href = it.x;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.textContent = it.name || '';
-      name.appendChild(link);
-    } else {
-      name.textContent = it.name || '';
-    }
-    card.appendChild(name);
-
-    card.addEventListener('touchstart', (e)=>{
-      if(!card.classList.contains('pop-open')){
-        card.classList.add('pop-open');
-        setTimeout(()=> document.addEventListener('touchstart', closeOnOutside, {once:true, passive:true}), 0);
-      }
-    }, {passive:true});
-
-    function closeOnOutside(ev){
-      if(!card.contains(ev.target)) card.classList.remove('pop-open');
-    }
-    card.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape') card.classList.remove('pop-open');
-    });
-
-    wrap.appendChild(card);
-  });
-}
 </script>
 </body>
 </html>
