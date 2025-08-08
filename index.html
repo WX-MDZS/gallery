@@ -1,5 +1,6 @@
 <!DOCTYPE html><html lang="ja"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>雲隠深情 | 作品一覧</title>
 <style>
   :root{
@@ -11,7 +12,7 @@
     margin:0;text-align:center;
     font-family:system-ui,-apple-system,"Segoe UI",Roboto;
     color:var(--text);background:var(--bg);
-    /* 念のため：過去の背景雲を完全に打ち消す */
+    /* 過去の背景雲を完全に打ち消し */
     background:none !important;background-image:none !important;
   }
 
@@ -19,15 +20,13 @@
   .hero{max-width:1100px;margin:24px auto 8px;padding:0 16px}
   .hero-box{
     position:relative;height:clamp(160px,24vw,300px);
-    background:none !important; /* 念のため */
+    /* ヒーロー枠の背景として雲を描画 */
+    background:url("./assets/clouds.png") center/contain no-repeat !important;
     overflow:visible;
   }
-  .hero-clouds,.hero-title{
-    position:absolute;inset:0;width:100%;height:100%;
-    pointer-events:none
-  }
-  .hero-clouds{object-fit:contain;filter:brightness(.95) contrast(1.25) saturate(1.05)}
-  .hero-title {object-fit:contain;z-index:1}
+  /* 予備のimgは使わない（残ってもOK） */
+  .hero-clouds{display:none}
+  .hero-title{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;z-index:1}
 
   /* ===== 見出し／説明／カウンタ ===== */
   header{padding:1rem 1rem .2rem}
@@ -38,10 +37,11 @@
 
   .wrap{max-width:1100px;margin:0 auto;padding:0 1rem 2.4rem}
 
-  /* ===== ギャラリー（4列固定） ===== */
+  /* ===== ギャラリー（4列固定／中央寄せ） ===== */
   .gallery{display:grid;gap:1.5rem;grid-template-columns:repeat(4,180px);justify-content:center}
   .card{width:180px;position:relative;text-align:center;padding:1rem .5rem;border:1px solid var(--ring);border-radius:14px;background:#fff;transition:transform .18s,box-shadow .18s}
   .card:hover,.card:focus-within{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+
   .icon-wrap{position:relative;display:inline-block}
   .icon{width:96px;height:96px;border-radius:50%;object-fit:cover;background:#f3f4f6;display:block;margin:0 auto .6rem;transition:transform .18s,box-shadow .18s,filter .18s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
   .card:hover .icon,.card:focus-within .icon{transform:scale(1.04);box-shadow:0 12px 28px rgba(0,0,0,.12);filter:saturate(1.03)}
@@ -88,22 +88,41 @@
 <footer>雲隠探情企画 / 主催 はくと</footer>
 
 <script>
-/* ========= 訪問カウンター（CountAPI） ========= */
-(function(){
+/* ========= 訪問カウンター（CountAPI：新キー＋初期値設定） =========
+   1) まず get で存在確認
+   2) 無ければ set で初期値（例: 10）を作成
+   3) その後 hit で+1 して表示
+*/
+(async function(){
   const NS  = "wx-mdzs";
-  const KEY = "gallery_hits_v4"; // 新キーで確実反映
-  const url = `https://api.countapi.xyz/hit/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`;
-  fetch(url,{cache:"no-store"})
-    .then(r=>r.json()).then(d=>{
-      const n = (d && (d.value??d.count)) ?? 0;
-      document.getElementById("hit").textContent = String(n).padStart(6,"0");
-    }).catch(_=>{
-      document.getElementById("hit").textContent = "000000";
-    });
+  const KEY = "gallery_hits_v4";   // 新キー
+  const INITIAL = 10;              // 初期値（必要に応じて変更OK）
+
+  function pad6(n){ return String(n).padStart(6,"0"); }
+  const el = document.getElementById("hit");
+
+  try{
+    // 1) 取得（存在確認）
+    let r = await fetch(`https://api.countapi.xyz/get/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`, {cache:"no-store"});
+    if(!r.ok){
+      // 2) 無ければ初期値を作っておく
+      await fetch(`https://api.countapi.xyz/set/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}?value=${INITIAL}`);
+    }
+    // 3) 増やす
+    const hit = await fetch(`https://api.countapi.xyz/hit/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`, {cache:"no-store"});
+    const data = await hit.json();
+    const n = (data && (data.value ?? data.count)) ?? 0;
+    el.textContent = pad6(n);
+  }catch(e){
+    console.error(e);
+    el.textContent = "000000";
+  }
 })();
 
-/* ========= CSV → ギャラリー描画 ========= */
-/* シートを直すだけでサイトも更新されます（列順：A=icon, B=name, C=twitter, D=work, E=feedback） */
+/* ========= CSV → ギャラリー描画 =========
+   シートを直すだけでサイトも更新されます
+   列順：A=icon, B=name, C=twitter, D=work, E=feedback
+*/
 const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
 
 async function loadCSV(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error("fetch fail");return parseCSV(await r.text())}
