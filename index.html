@@ -1,172 +1,147 @@
-<!DOCTYPE html><html lang="ja"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>雲隠深情 | 作品一覧</title>
-/* 雲（カード内だけ／少し薄め） */
-.card::before{
-  content:"";
-  position:absolute;
-  left:0; right:0; bottom:8px; height:46%;
-  background:url("./assets/clouds.png") center bottom / 140% auto no-repeat;
-  opacity:.28;           /* ← 薄く */
-  pointer-events:none;
-  z-index:1;             /* ← 雲は最背面寄り */
+/* ===== リセット系（雲の帯が背景に乗らないよう強制） ===== */
+body {
+  background: none !important;
+  background-image: none !important;
 }
 
-/* アイコン一式（ポップの分だけ下に空ける） */
-.icon-wrap{
-  position:relative;
-  display:inline-block;
-  z-index:20;            /* pop よりは低い／name よりは高い */
-  padding-bottom:64px;   /* ← PCでの余白を増やす（以前 44px） */
+/* ===== カード ===== */
+.card {
+  width: 180px;
+  position: relative;
+  text-align: center;
+  padding: 1rem .5rem 1.1rem;
+  border: 1px solid var(--ring);
+  border-radius: 14px;
+  background: #fff;
+  transition: transform .18s, box-shadow .18s;
+  overflow: hidden;
+}
+.card:hover,
+.card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
 }
 
-/* ポップアップは最前面に */
-.pop{
-  position:absolute;
-  left:50%;
-  top:calc(100% + 8px);
-  transform:translateX(-50%) scale(.98);
-  opacity:0; pointer-events:none;
-  background:#fff; border:1px solid var(--ring); border-radius:10px;
-  box-shadow:0 10px 24px rgba(0,0,0,.08);
-  padding:.5rem .6rem; white-space:nowrap;
-  z-index:100;           /* ← 最前面に固定 */
-  transition:opacity .15s, transform .15s;
+/* カード内の雲：薄め＆最背面寄り */
+.card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  height: 38%;
+  background: url("./assets/clouds.png") center bottom / 140% auto no-repeat;
+  opacity: .22;
+  pointer-events: none;
+  z-index: 1;
 }
 
-/* 名前は雲より上、ポップより下。少し間隔も取る */
-.name{
-  font-size:.95rem; font-weight:800;
-  margin:.55rem 0 .4rem;                 /* ← ちょい下げる */
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  position:relative; z-index:10;         /* ← 雲より前、popより後ろ */
-  color:#222 !important;
-  -webkit-text-stroke:2px #fff;
+/* アイコン一式（縦長化防止） */
+.icon-wrap {
+  position: relative;
+  display: inline-block;
+  z-index: 20;
+  padding-bottom: 12px;
+}
+.icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f3f4f6;
+  display: block;
+  margin: 0 auto .6rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  transition: transform .18s, box-shadow .18s, filter .18s;
+}
+.card:hover .icon,
+.card:focus-within .icon {
+  transform: scale(1.04);
+  box-shadow: 0 12px 28px rgba(0,0,0,.12);
+  filter: saturate(1.03);
+}
+
+/* ===== ポップアップ（初期状態は非表示） ===== */
+.pop {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%) scale(.98);
+  opacity: 0;
+  pointer-events: none; /* 重要 */
+  background: #fff;
+  border: 1px solid var(--ring);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  padding: .5rem .6rem;
+  white-space: nowrap;
+  z-index: 100;
+  transition: opacity .15s, transform .15s;
+}
+.pop::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-bottom-color: #fff;
+  filter: drop-shadow(0 1px 0 var(--ring));
+}
+/* ホバー/フォーカス/タップ時に表示 */
+.card:hover .pop,
+.card:focus-within .pop,
+.card.pop-open .pop {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  pointer-events: auto;
+}
+
+/* ===== 名前 ===== */
+.name {
+  font-size: .95rem;
+  font-weight: 800;
+  margin: .5rem 0 .3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  z-index: 10;
+  color: #222 !important;
+  -webkit-text-stroke: 2px #fff;
   text-shadow:
-    1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff,
-    1px 1px #fff,-1px 1px #fff,1px -1px #fff,-1px -1px #fff;
+    1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff,
+    1px 1px #fff, -1px 1px #fff, 1px -1px #fff, -1px -1px #fff;
 }
 
-/* スマホはさらに余白を増やす（ボタンが2行になっても重ならない） */
-@media (max-width:520px){
-  .gallery{grid-template-columns:repeat(2,160px)}
-  .card{width:160px}
-  .icon-wrap{padding-bottom:82px;}      /* ← ここが効きます */
+/* ===== ボタン色（R103 G167 B186） ===== */
+.pill {
+  display: inline-block;
+  font-size: .85rem;
+  padding: .3rem .6rem;
+  margin: 0 .15rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  text-decoration: none;
+  color: var(--accent);
+  background: #f8fafc;
+  transition: background .12s, border-color .12s, color .12s;
+}
+.pill:hover {
+  background: rgba(103,167,186,.15);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
-
-</head>
-<body>
-
-<!-- タイトル -->
-<div class="hero">
-  <img class="hero-title" src="./assets/title.jpg" alt="雲隠深情">
-</div>
-
-<header>
-  <h1>作品一覧</h1>
-  <p class="lead">アイコン＝X、ポップアップのボタン＝作品・感想</p>
-  <p class="counter-line">あなたは「<span id="hit" class="num">000000</span>」人目の姑蘇藍氏の弟子</p>
-</header>
-
-<div class="wrap">
-  <div id="gallery" class="gallery" aria-live="polite"></div>
-  <div id="empty" style="text-align:center;color:#666;padding:2rem" hidden>データを読み込めませんでした。</div>
-</div>
-
-<footer>雲隠探情企画 / 主催 はくと</footer>
-
-<script>
-/* ========= 訪問カウンター（CountAPI：新キー＋初期値設定） ========= */
-(async function(){
-  const NS  = "wx-mdzs";
-  const KEY = "gallery_hits_v4";   // 新キー
-  const INITIAL = 10;              // 初期値（必要に応じて変更OK）
-
-  function pad6(n){ return String(n).padStart(6,"0"); }
-  const el = document.getElementById("hit");
-
-  try{
-    let r = await fetch(`https://api.countapi.xyz/get/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`, {cache:"no-store"});
-    if(!r.ok){
-      await fetch(`https://api.countapi.xyz/set/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}?value=${INITIAL}`);
-    }
-    const hit = await fetch(`https://api.countapi.xyz/hit/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`, {cache:"no-store"});
-    const data = await hit.json();
-    const n = (data && (data.value ?? data.count)) ?? 0;
-    el.textContent = pad6(n);
-  }catch(e){
-    console.error(e);
-    el.textContent = "000000";
+/* ===== スマホ対応 ===== */
+@media (max-width: 520px) {
+  .gallery {
+    grid-template-columns: repeat(2, 160px);
   }
-})();
-
-/* ========= CSV → ギャラリー描画 =========
-   列順：A=icon, B=name, C=twitter, D=work, E=feedback
-   シートを直すだけでサイトも更新されます
-*/
-const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
-
-async function loadCSV(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error("fetch fail");return parseCSV(await r.text())}
-function parseCSV(t){
-  const L=t.replace(/\r\n?/g,"\n").split("\n").filter(l=>l.trim()!=="");const rows=[];
-  for(const line of L){let out=[],cur="",q=false;for(let i=0;i<line.length;i++){const ch=line[i],nx=line[i+1];
-    if(ch==='"'){if(q&&nx==='"'){cur+='"';i++}else q=!q}
-    else if(ch===','&&!q){out.push(cur);cur=""}
-    else cur+=ch}
-    out.push(cur);rows.push(out.map(v=>v.trim()))
-  } return rows;
+  .card {
+    width: 160px;
+  }
+  .icon-wrap {
+    padding-bottom: 20px;
+  }
 }
-
-// A=icon, B=name, C=twitter, D=work, E=feedback
-function createCard({icon,name,twitter,work,feedback}){
-  const card=document.createElement("div");card.className="card";
-  const wrap=document.createElement("div");wrap.className="icon-wrap";card.appendChild(wrap);
-
-  // アイコン → X/Twitter
-  const aTw=document.createElement("a");aTw.href=twitter||"#";aTw.target="_blank";aTw.rel="noopener";
-  const img=document.createElement("img");img.className="icon";img.alt=name||"icon";img.src=`./icons/${icon}`;
-  aTw.appendChild(img);wrap.appendChild(aTw);
-
-  // ポップアップ（作品／感想）
-  const pop=document.createElement("div");pop.className="pop";
-  const toWork=document.createElement("a");toWork.className="pill";toWork.textContent="作品へ";toWork.href=work||"#";toWork.target="_blank";toWork.rel="noopener";
-  const toFb=document.createElement("a");toFb.className="pill";toFb.textContent="感想へ";toFb.href=feedback||"#";toFb.target="_blank";toFb.rel="noopener";
-  pop.appendChild(toWork);pop.appendChild(toFb);wrap.appendChild(pop);
-
-  // ★ 名前（リンクなし・白縁取りあり）…必ず最後にカードへ追加
-  const nameEl=document.createElement("div");
-  nameEl.className="name";
-  nameEl.textContent=name||"";
-  card.appendChild(nameEl);  // ←これでポップアップの下に配置される
-
-  // タッチで開閉（1回目は開くだけ）
-  card.addEventListener("touchstart",ev=>{
-    if(!card.classList.contains("pop-open")){
-      card.classList.add("pop-open");
-      setTimeout(()=>document.addEventListener("touchstart",e=>{
-        if(!card.contains(e.target))card.classList.remove("pop-open")
-      },{once:true}),0);
-      ev.preventDefault();
-    }
-  },{passive:false});
-  card.addEventListener("keydown",e=>{if(e.key==="Escape")card.classList.remove("pop-open")});
-  return card;
-}
-
-(async function init(){
-  const wrap=document.getElementById("gallery"),empty=document.getElementById("empty");
-  try{
-    const rows=await loadCSV(CSV_URL);
-    // 先頭行がヘッダーっぽければ除外
-    const data=rows.filter((r,i)=> i!==0 || !r.join(",").toLowerCase().match(/icon|アイコン|twitter|link|作品|感想/));
-    const items=data.map(r=>({icon:r[0]||"",name:r[1]||"",twitter:r[2]||"",work:r[3]||"",feedback:r[4]||""})).filter(x=>x.icon);
-    if(!items.length){empty.hidden=false;return}
-    const frag=document.createDocumentFragment();items.forEach(it=>frag.appendChild(createCard(it)));wrap.appendChild(frag);
-  }catch(e){console.error(e);empty.hidden=false}
-})();
-</script>
-</body></html>
-
-
