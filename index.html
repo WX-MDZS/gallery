@@ -5,12 +5,28 @@
   :root{--bg:#fff;--text:#222;--muted:#666;--ring:#e5e7eb}
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto;color:var(--text);background:var(--bg)}
-  header{text-align:center;padding:2rem 1rem 1rem}
+
+  /* ===== Hero（雲背景＋タイトルロゴ） ===== */
+  .hero{max-width:1100px;margin:24px auto 8px;padding:0 16px}
+  .hero-box{position:relative;height:clamp(160px,24vw,300px)}
+  /* 雲（背景） */
+  .hero-box::before{
+    content:"";position:absolute;inset:0;
+    background:url("./assets/clouds.png") center/contain no-repeat;
+    opacity:.95;
+    animation:floatY 9s ease-in-out infinite;
+  }
+  /* ロゴ（前面） */
+  .hero-title{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1}
+  @keyframes floatY{from{transform:translateY(0)}50%{transform:translateY(6px)}to{transform:translateY(0)}}
+
+  /* ===== 見出し ===== */
+  header{text-align:center;padding:1rem 1rem 1rem}
   header h1{margin:0 0 .4rem;font-size:clamp(1.2rem,2.6vw,1.7rem)}
   header p{margin:.2rem 0 0;color:var(--muted)}
   .wrap{max-width:1100px;margin:0 auto;padding:0 1rem 2rem}
 
-  /* 4列固定（PC）／中央寄せ。スマホは2列に */
+  /* ===== ギャラリー（4列固定／中央寄せ） ===== */
   .gallery{display:grid;gap:1.5rem;grid-template-columns:repeat(4,180px);justify-content:center}
   .card{width:180px;position:relative;text-align:center;padding:1rem .5rem;border:1px solid var(--ring);border-radius:14px;background:#fff;transition:transform .18s,box-shadow .18s,border-color .18s}
   .card:hover,.card:focus-within{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
@@ -28,17 +44,26 @@
   .pop::after{content:"";position:absolute;left:50%;bottom:100%;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:#fff;filter:drop-shadow(0 1px 0 var(--ring))}
   .card:hover .pop,.card:focus-within .pop,.card.pop-open .pop{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
 
-  /* ポップアップ内の丸ボタン */
+  /* ポップアップ内ボタン */
   .pill{display:inline-block;font-size:.85rem;padding:.3rem .6rem;margin:0 .15rem;border-radius:999px;border:1px solid var(--ring);text-decoration:none;color:#2563eb;background:#f8fafc;transition:background .12s,border-color .12s}
   .pill:hover{background:#eef2ff;border-color:#c7d2fe}
 
+  /* スマホは2列に（見やすさ重視） */
   @media (max-width:520px){.gallery{grid-template-columns:repeat(2,160px)}.card{width:160px}}
   @media (prefers-reduced-motion:reduce){.card,.icon{transition:none!important}}
 </style>
 </head><body>
+
+<!-- ★ ヒーロー：雲背景＋タイトルロゴ -->
+<div class="hero">
+  <div class="hero-box">
+    <img class="hero-title" src="./assets/title.png" alt="雲隠深情">
+  </div>
+</div>
+
 <header>
   <h1>企画参加者の作品一覧</h1>
-  <p>アイコン＝Twitter、ポップアップ＝作品／感想</p>
+  <p>アイコン＝Twitter、ポップアップのボタン＝作品／感想</p>
 </header>
 
 <div class="wrap">
@@ -47,12 +72,21 @@
 </div>
 
 <script>
-// ★ CSV公開URL（固定）
+// CSV公開URL（固定）
 const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
 
 async function loadCSV(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error("fetch fail");return parseCSV(await r.text())}
-function parseCSV(t){const L=t.replace(/\r\n?/g,"\n").split("\n").filter(l=>l.trim()!=="");const rows=[];for(const line of L){let out=[],cur="",q=false;for(let i=0;i<line.length;i++){const ch=line[i],nx=line[i+1];if(ch==='"'){if(q&&nx==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur);cur=""}else cur+=ch}out.push(cur);rows.push(out.map(v=>v.trim()))}return rows}
+function parseCSV(t){
+  const L=t.replace(/\r\n?/g,"\n").split("\n").filter(l=>l.trim()!=="");const rows=[];
+  for(const line of L){let out=[],cur="",q=false;for(let i=0;i<line.length;i++){const ch=line[i],nx=line[i+1];
+    if(ch==='"'){if(q&&nx==='"'){cur+='"';i++}else q=!q}
+    else if(ch===','&&!q){out.push(cur);cur=""}
+    else cur+=ch}
+    out.push(cur);rows.push(out.map(v=>v.trim()))
+  } return rows;
+}
 
+// A=icon, B=name, C=twitter, D=work, E=feedback
 function createCard({icon,name,twitter,work,feedback}){
   const card=document.createElement("div");card.className="card";
 
@@ -72,7 +106,15 @@ function createCard({icon,name,twitter,work,feedback}){
   const nameEl=document.createElement("div");nameEl.className="name";nameEl.textContent=name||"";card.appendChild(nameEl);
 
   // タッチで開閉（初回は開くだけ）
-  card.addEventListener("touchstart",ev=>{if(!card.classList.contains("pop-open")){card.classList.add("pop-open");setTimeout(()=>document.addEventListener("touchstart",e=>{if(!card.contains(e.target))card.classList.remove("pop-open")},{once:true}),0);ev.preventDefault()}},{passive:false});
+  card.addEventListener("touchstart",ev=>{
+    if(!card.classList.contains("pop-open")){
+      card.classList.add("pop-open");
+      setTimeout(()=>document.addEventListener("touchstart",e=>{
+        if(!card.contains(e.target))card.classList.remove("pop-open")
+      },{once:true}),0);
+      ev.preventDefault();
+    }
+  },{passive:false});
   card.addEventListener("keydown",e=>{if(e.key==="Escape")card.classList.remove("pop-open")});
   return card;
 }
@@ -83,7 +125,8 @@ function createCard({icon,name,twitter,work,feedback}){
     const rows=await loadCSV(CSV_URL);
     // 先頭行がヘッダーなら除外
     const data=rows.filter((r,i)=> i!==0 || !r.join(",").toLowerCase().match(/icon|アイコン|twitter|link|作品|感想/));
-    const items=data.map(r=>({icon:r[0]||"",name:r[1]||"",twitter:r[2]||"",work:r[3]||"",feedback:r[4]||""})).filter(x=>x.icon);
+    const items=data.map(r=>({icon:r[0]||"",name:r[1]||"",twitter:r[2]||"",work:r[3]||"",feedback:r[4]||""}))
+                    .filter(x=>x.icon);
     if(!items.length){empty.hidden=false;return}
     const frag=document.createDocumentFragment();items.forEach(it=>frag.appendChild(createCard(it)));wrap.appendChild(frag);
   }catch(e){console.error(e);empty.hidden=false}
