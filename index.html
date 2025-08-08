@@ -12,50 +12,45 @@
     --ink:    #222;
     --shadow: 0 8px 20px rgba(0,0,0,.10);
   }
-
-  *{ box-sizing: border-box }
+  *{ box-sizing:border-box }
   body{
     margin:0;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto,
       "Hiragino Sans","Noto Sans JP","Yu Gothic", Meiryo, sans-serif;
-    color: var(--ink); text-align:center; background:#fff;
+    color:var(--ink); text-align:center; background:#fff;
   }
+  header{ padding:24px 12px 8px }
+  header img{ max-width:920px; width:92%; height:auto; display:block; margin:0 auto }
+  h2{ margin:8px 0 4px; font-size:clamp(18px,2.8vw,26px) }
+  .description{ color:#555; font-size:.95rem; margin:2px 0 6px }
+  .counter{ font-weight:700; margin:8px 0 22px; font-size:clamp(16px,2.3vw,20px) }
 
-  header{ padding: 24px 12px 8px }
-  header img{ max-width: 920px; width: 92%; height:auto; display:block; margin:0 auto }
-
-  h2{ margin: 8px 0 4px; font-size: clamp(18px, 2.8vw, 26px) }
-  .description{ color:#555; font-size: .95rem; margin: 2px 0 6px }
-  .counter{ font-weight:700; margin: 8px 0 22px; font-size: clamp(16px, 2.3vw, 20px) }
-
-  /* 4×8 固定（PC）。スマホは2列に崩すだけ、中身は同じ */
+  /* 4×8 固定（PC）、スマホは2列 */
   .grid{
     display:grid; gap:24px;
-    grid-template-columns: repeat(4, 1fr);
-    max-width: 980px; margin: 0 auto 44px; padding: 0 16px;
+    grid-template-columns:repeat(4,1fr);
+    max-width:980px; margin:0 auto 44px; padding:0 16px;
   }
-  @media (max-width: 640px){
-    .grid{ grid-template-columns: repeat(2, 1fr); gap:18px }
+  @media (max-width:640px){
+    .grid{ grid-template-columns:repeat(2,1fr); gap:18px }
   }
 
   .card{
     position:relative; background:#fff; border-radius:16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    padding:14px 10px 22px;
-    transition: transform .12s ease;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    padding:14px 10px 22px; transition:transform .12s ease;
   }
-  .card:hover{ transform: translateY(-2px) }
+  .card:hover{ transform:translateY(-2px) }
 
   .icon-wrap{ position:relative; display:inline-block }
   .icon{
     width:120px; height:120px; border-radius:50%; object-fit:cover;
-    border: 2px solid var(--ring); display:block; margin: 6px auto 8px;
-    box-shadow: 0 6px 12px rgba(0,0,0,.06);
-    transition: transform .18s ease, box-shadow .18s ease;
+    border:2px solid var(--ring); display:block; margin:6px auto 8px;
+    box-shadow:0 6px 12px rgba(0,0,0,.06);
+    transition:transform .18s ease, box-shadow .18s ease;
   }
   .card:hover .icon, .card:focus-within .icon{
-    transform: scale(1.04);
-    box-shadow: 0 12px 24px rgba(0,0,0,.12);
+    transform:scale(1.04); box-shadow:0 12px 24px rgba(0,0,0,.12);
   }
 
   .name{
@@ -63,23 +58,17 @@
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
 
-  /* ポップアップ（初期は非表示） */
+  /* ポップアップ */
   .pop{
-    position:absolute; left:50%;
-    transform: translateX(-50%) translateY(6px) scale(.98);
-    bottom: 14px; /* カード下辺から少し上に固定 */
-    opacity: 0; pointer-events:none;
+    position:absolute; left:50%; bottom:14px;
+    transform:translateX(-50%) translateY(6px) scale(.98);
+    opacity:0; pointer-events:none;
     background:#fff; border:1px solid var(--ring); border-radius:12px;
-    padding: .5rem .6rem; white-space:nowrap; z-index: 10;
-    box-shadow: var(--shadow);
-    transition: opacity .15s, transform .15s;
+    padding:.5rem .6rem; white-space:nowrap; z-index:10;
+    box-shadow:var(--shadow); transition:opacity .15s, transform .15s;
   }
-  /* マウスホバー / キーボードフォーカス / タップで開いてる時 */
-  .card:hover .pop,
-  .card:focus-within .pop,
-  .card.pop-open .pop{
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+  .card:hover .pop, .card:focus-within .pop, .card.pop-open .pop{
+    opacity:1; transform:translateX(-50%) translateY(0) scale(1);
     pointer-events:auto;
   }
 
@@ -87,80 +76,65 @@
     display:inline-block; font-size:.9rem; padding:.35rem .7rem; margin:0 .2rem;
     border-radius:999px; text-decoration:none;
     border:1px solid var(--accent); color:var(--accent); background:#f8fafc;
-    transition: background .12s, border-color .12s, color .12s;
+    transition:background .12s, border-color .12s, color .12s;
   }
-  .pill:hover{ background: rgba(103,167,186,.15) }
+  .pill:hover{ background:rgba(103,167,186,.15) }
 
   .icon-link:focus-visible, .pill:focus-visible{
-    outline: 2px solid var(--accent); outline-offset: 2px; border-radius:12px;
+    outline:2px solid var(--accent); outline-offset:2px; border-radius:12px;
   }
 
-  footer{ margin: 28px 0 22px; color:#666; font-size:.9rem }
+  footer{ margin:28px 0 22px; color:#666; font-size:.9rem }
 </style>
 </head>
 <body>
 
 <header>
-  <!-- タイトル画像（雲は出しません） -->
   <img src="assets/title.jpg" alt="雲隠深情">
 </header>
 
 <h2>作品一覧</h2>
 <p class="description">アイコン＝X、ポップアップのボタン＝作品・感想</p>
-<p class="counter">あなたは「<span id="visitor-count">000000</span>」人目の姑蘇藍氏の先輩</p>
+<p class="counter">あなたは「<span id="visitor-count">000000</span>」人目の姑蘇藍氏の弟子</p>
 
-<!-- CSV から生成 -->
 <div id="grid" class="grid" aria-live="polite"></div>
 
 <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-  /*************** 訪問カウンター（localStorage） ***************/
+  /******** 訪問カウンター ********/
   const counterEl = document.getElementById('visitor-count');
   let count = Number(localStorage.getItem('visitCount') || 0) + 1;
   localStorage.setItem('visitCount', count);
   counterEl.textContent = String(count).padStart(6, '0');
 
-  /*************** 設定：CSVの公開URL ***************/
-  // ←ここをあなたの「公開されたCSV」のURLに置き換え
-  // 例）https://docs.google.com/spreadsheets/d/e/XXXX/pub?gid=0&single=true&output=csv
-  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv';
+  /******** CSV の URL（あなたの公開CSVに差し替え） ********/
+  const CSV_URL =
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv';
 
-  /*************** ざっくりCSVパーサ（"でくくられたカンマ対応） ***************/
+  /******** シンプルCSVパーサ（" を考慮） ********/
   function parseCSV(text){
-    const rows = [];
-    let i = 0, field = '', row = [], inQuotes = false;
-
-    while (i < text.length){
-      const c = text[i];
-      if (inQuotes){
-        if (c === '"'){
-          if (text[i+1] === '"'){ field += '"'; i++; } // エスケープ（""）
-          else { inQuotes = false; }
-        } else {
-          field += c;
-        }
-      } else {
-        if (c === '"'){ inQuotes = true; }
-        else if (c === ','){ row.push(field); field = ''; }
-        else if (c === '\n' || c === '\r'){
-          if (field !== '' || row.length){ row.push(field); rows.push(row); }
-          field = ''; row = [];
-          // CRLF 対応
-          if (c === '\r' && text[i+1] === '\n') i++;
-        } else {
-          field += c;
-        }
+    const rows=[]; let i=0, field='', row=[], inQ=false;
+    while(i<text.length){
+      const c=text[i];
+      if(inQ){
+        if(c=='"'){ if(text[i+1]=='"'){ field+='"'; i++; } else inQ=false; }
+        else field+=c;
+      }else{
+        if(c=='"') inQ=true;
+        else if(c==','){ row.push(field); field=''; }
+        else if(c=='\n'||c=='\r'){ if(field!==''||row.length){ row.push(field); rows.push(row); }
+          field=''; row=[]; if(c=='\r'&&text[i+1]=='\n') i++; }
+        else field+=c;
       }
       i++;
     }
-    if (field !== '' || row.length){ row.push(field); rows.push(row); }
+    if(field!==''||row.length){ row.push(field); rows.push(row); }
     return rows;
   }
 
-  /*************** カードHTML生成 ***************/
-  function makeCard({icon, name, x, work, feedback}){
-    // アイコン名が "01" 形式なら .png を補完。拡張子が含まれている場合はそのまま
+  /******** カード生成 ********/
+  function makeCard({icon,name,x,work,feedback}){
     const hasExt = /\.[a-zA-Z0-9]+$/.test(icon);
     const iconPath = 'icons/' + icon + (hasExt ? '' : '.png');
 
@@ -181,61 +155,56 @@
     return card;
   }
 
-  /*************** CSV 読み込み → 4×8=32人 生成 ***************/
+  /******** 読み込み → 4×8=32人 ********/
   async function init(){
     const grid = document.getElementById('grid');
     grid.textContent = '読み込み中…';
     try{
-      const res = await fetch(CSV_URL, {cache:'no-store'});
+      const res  = await fetch(CSV_URL, {cache:'no-store'});
       const text = await res.text();
       const rows = parseCSV(text);
+      const data = rows.slice(1).map(r=>({
+        icon:(r[0]||'').trim(),
+        name:(r[1]||'').trim(),
+        x:(r[2]||'').trim(),
+        work:(r[3]||'').trim(),
+        feedback:(r[4]||'').trim(),
+      })).slice(0,32);
 
-      // 1行目がヘッダ想定。2行目以降を使う
-      const dataRows = rows.slice(1).filter(r => r && r.length > 0);
+      grid.textContent='';
+      data.forEach(item => grid.appendChild(makeCard(item)));
 
-      // A:アイコン名 / B:名前 / C:X / D:作品 / E:感想
-      const items = dataRows.map(r => ({
-        icon: (r[0] || '').trim(),
-        name: (r[1] || '').trim(),
-        x: (r[2] || '').trim(),
-        work: (r[3] || '').trim(),
-        feedback: (r[4] || '').trim(),
-      })).slice(0, 32); // 32件に制限
-
-      grid.textContent = '';
-      if (items.length === 0){
-        grid.textContent = 'データが見つかりません。';
-        return;
-      }
-      items.forEach(item => grid.appendChild(makeCard(item)));
-
-      // スマホ：タップでポップアップ開閉（1件ずつ）
+      /***** タッチ：リンクはブロックしない。カード(空白部)タップで開閉だけ *****/
       document.querySelectorAll('.card').forEach(card=>{
         card.addEventListener('touchstart', e=>{
+          const onLink = e.target.closest('a'); // アイコン or ボタン
+          if(onLink) return; // ← リンクはそのまま遷移
+
+          // 空白部をタップしたら「開く」だけ（既に開いていれば何もしない）
           if(!card.classList.contains('pop-open')){
             document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
             card.classList.add('pop-open');
-            e.preventDefault();
+            e.preventDefault(); // ← ここでスクロール抑止のみ
           }
         }, {passive:false});
       });
+
       // 外側タップで閉じる
       document.addEventListener('touchstart', e=>{
-        const inCard = e.target.closest('.card');
-        if(!inCard){
+        if(!e.target.closest('.card')){
           document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
         }
       }, {passive:true});
-      // ESCで閉じる
+
+      // ESCで閉じる（キーボード）
       document.addEventListener('keydown', e=>{
-        if(e.key === 'Escape'){
+        if(e.key==='Escape'){
           document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
         }
       });
-
     }catch(err){
-      grid.textContent = '読み込みでエラーが発生しました。CSVの公開設定とURLをご確認ください。';
       console.error(err);
+      grid.textContent = '読み込みでエラーが発生しました。CSVの公開設定とURLをご確認ください。';
     }
   }
   init();
@@ -243,4 +212,3 @@
 
 </body>
 </html>
-
