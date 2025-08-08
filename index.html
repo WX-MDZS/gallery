@@ -3,108 +3,102 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>雲隠深情 | 作品一覧</title>
 <style>
-  :root{
-    --bg:#fff;--text:#222;--muted:#666;--ring:#e5e7eb;
-    --accent:rgb(103,167,186);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;text-align:center;
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto;
-    color:var(--text);background:var(--bg);
-    /* 念のため：過去の全画面背景雲を完全に打ち消す */
-    background:none !important;background-image:none !important;
-  }
+/* カード全体 */
+.card{
+  display:inline-block;
+  margin:1rem;
+  text-align:center;
+  vertical-align:top;
+  width:150px;
+}
 
-  /* ===== タイトル（ヒーロー） ===== */
-  .hero{max-width:1100px;margin:24px auto 8px;padding:0 16px}
-  .hero-title{width:100%;height:auto;max-height:300px;object-fit:contain}
+/* アイコン部分（雲と重ならないよう余白確保） */
+.icon-wrap{
+  position:relative;
+  display:inline-block;
+  z-index:10;            /* ポップアップより前に表示される要素を管理 */
+  padding-bottom:44px;   /* 名前や雲のための余白 */
+}
 
-  /* ===== 見出し／説明／カウンタ ===== */
-  header{padding:1rem 1rem .2rem}
-  header h1{margin:0 0 .4rem;font-size:clamp(1.2rem,2.6vw,1.7rem)}
-  .lead{margin:.2rem 0 1.1rem;color:var(--muted)}
-  .counter-line{font-weight:800;font-size:1.18rem;margin:.3rem 0 1.3rem}
-  .counter-line .num{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em}
+/* アイコン画像 */
+.icon{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  overflow:hidden;
+  border:3px solid #67A7BA; /* R103 G167 B186 */
+  position:relative;
+  z-index:2;
+}
 
-  .wrap{max-width:1100px;margin:0 auto;padding:0 1rem 2.4rem}
+/* 雲の背景（薄め） */
+.icon-wrap::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:160px;
+  height:60px;
+  background:url("assets/clouds.png") no-repeat center;
+  background-size:contain;
+  opacity:0.35; /* ★色薄く */
+  z-index:1;
+}
 
-  /* ===== ギャラリー（4列固定／中央寄せ） ===== */
-  .gallery{display:grid;gap:1.5rem;grid-template-columns:repeat(4,180px);justify-content:center}
-  .card{
-    width:180px;position:relative;text-align:center;
-    padding:1rem .5rem 1.1rem;
-    border:1px solid var(--ring);border-radius:14px;background:#fff;
-    transition:transform .18s,box-shadow .18s;border-color .18s;
-    overflow:hidden; /* 雲の装飾をカード内に閉じ込める */
-  }
-  .card:hover,.card:focus-within{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+/* 名前（白縁取り＋下の層に固定） */
+.name{
+  font-size:.95rem;
+  font-weight:800;
+  margin:.35rem 0 .4rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+  z-index:0; /* ★必ずポップより下に */
+  color:#222 !important;
+  -webkit-text-stroke:2px #fff;
+  text-shadow:
+    1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff,
+    1px 1px #fff,-1px 1px #fff,1px -1px #fff,-1px -1px #fff;
+}
 
-  /* ★ 各カード内の雲（画像をうっすら） */
-  .card::before{
-    content:"";position:absolute;left:0;right:0;bottom:8px;height:46%;
-    background:url("./assets/clouds.png") center bottom / 140% auto no-repeat;
-    opacity:.35;pointer-events:none;z-index:0;
-  }
+/* ポップアップ */
+.pop{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translate(-50%, 100%);
+  display:flex;
+  gap:.5rem;
+  z-index:50; /* ★最前面 */
+}
 
-  .icon-wrap{
-    position:relative;display:inline-block;z-index:1;
-    /* ★ ポップアップの高さぶんスペースを確保（重なり防止） */
-    padding-bottom:44px;
-  }
-  .icon{
-    width:96px;height:96px;border-radius:50%;object-fit:cover;background:#f3f4f6;
-    display:block;margin:0 auto .6rem;box-shadow:0 2px 8px rgba(0,0,0,.06);
-    transition:transform .18s,box-shadow .18s,filter .18s
-  }
-  .card:hover .icon,.card:focus-within .icon{
-    transform:scale(1.04);box-shadow:0 12px 28px rgba(0,0,0,.12);filter:saturate(1.03)
-  }
+/* ボタン */
+.pill{
+  display:inline-block;
+  padding:.25rem .75rem;
+  border-radius:999px;
+  background-color:transparent;
+  border:2px solid #67A7BA;
+  color:#67A7BA;
+  text-decoration:none;
+  font-size:.85rem;
+  font-weight:bold;
+}
 
-  /* ★ 名前：黒＋白フチ、必ずポップの下に配置 */
-  .name{
-    font-size:.95rem;font-weight:800;margin:.35rem 0 .4rem;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    position:relative;z-index:1;color:#222 !important;
-    -webkit-text-stroke:2px #fff;
-    text-shadow:
-      1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff,
-      1px 1px #fff,-1px 1px #fff,1px -1px #fff,-1px -1px #fff;
-  }
+.pill:hover{
+  background-color:#67A7BA;
+  color:white;
+}
 
-  /* ポップアップ（アイコン直下） */
-  .pop{
-    position:absolute;left:50%;top:calc(100% + 8px);
-    transform:translateX(-50%) scale(.98);opacity:0;pointer-events:none;
-    background:#fff;border:1px solid var(--ring);border-radius:10px;
-    box-shadow:0 10px 24px rgba(0,0,0,.08);padding:.5rem .6rem;white-space:nowrap;
-    z-index:20;transition:opacity .15s,transform .15s
-  }
-  .pop::after{
-    content:"";position:absolute;left:50%;bottom:100%;transform:translateX(-50%);
-    border:8px solid transparent;border-bottom-color:#fff;
-    filter:drop-shadow(0 1px 0 var(--ring))
-  }
-  .card:hover .pop,.card:focus-within .pop,.card.pop-open .pop{
-    opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto
-  }
-
-  /* ボタン色：R103 G167 B186 */
-  .pill{
-    display:inline-block;font-size:.85rem;padding:.3rem .6rem;margin:0 .15rem;
-    border-radius:999px;border:1px solid var(--accent);text-decoration:none;
-    color:var(--accent);background:#f8fafc;
-    transition:background .12s,border-color .12s,color .12s
-  }
-  .pill:hover{background:rgba(103,167,186,.15);border-color:var(--accent);color:var(--accent)}
-
-  /* スマホ2列 */
-  @media (max-width:520px){.gallery{grid-template-columns:repeat(2,160px)}.card{width:160px}}
-  @media (prefers-reduced-motion:reduce){.card,.icon{transition:none!important}}
-
-  /* ===== フッター ===== */
-  footer{border-top:1px solid var(--ring);padding:1rem 1rem;margin-top:1rem;color:#6b7280;font-size:.92rem}
+/* 見出しのカウンター */
+.counter{
+  font-size:1.2rem;
+  font-weight:bold;
+}
 </style>
+
 </head>
 <body>
 
@@ -217,3 +211,4 @@ function createCard({icon,name,twitter,work,feedback}){
 })();
 </script>
 </body></html>
+
