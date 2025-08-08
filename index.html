@@ -5,7 +5,7 @@
 <style>
   :root{
     --bg:#fff;--text:#222;--muted:#666;--ring:#e5e7eb;
-    --accent:rgb(103,167,186)
+    --accent:rgb(103,167,186);
   }
   *{box-sizing:border-box}
   body{
@@ -36,7 +36,7 @@
     padding:1rem .5rem 1.1rem;
     border:1px solid var(--ring);border-radius:14px;background:#fff;
     transition:transform .18s,box-shadow .18s;border-color .18s;
-    overflow:hidden; /* ← 雲の装飾をカード内に閉じ込める */
+    overflow:hidden; /* 雲の装飾をカード内に閉じ込める */
   }
   .card:hover,.card:focus-within{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
 
@@ -47,7 +47,11 @@
     opacity:.35;pointer-events:none;z-index:0;
   }
 
-  .icon-wrap{position:relative;display:inline-block;z-index:1}
+  .icon-wrap{
+    position:relative;display:inline-block;z-index:1;
+    /* ★ ポップアップの高さぶんスペースを確保（重なり防止） */
+    padding-bottom:44px;
+  }
   .icon{
     width:96px;height:96px;border-radius:50%;object-fit:cover;background:#f3f4f6;
     display:block;margin:0 auto .6rem;box-shadow:0 2px 8px rgba(0,0,0,.06);
@@ -57,14 +61,12 @@
     transform:scale(1.04);box-shadow:0 12px 28px rgba(0,0,0,.12);filter:saturate(1.03)
   }
 
-  /* ★ 名前：白フチ付き（クロスブラウザ） */
+  /* ★ 名前：黒＋白フチ、必ずポップの下に配置 */
   .name{
-    font-size:.95rem;font-weight:800;margin:.25rem 0 .4rem;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:1;
-    color:#222;
-    /* まず webkit 系のストローク */
-    -webkit-text-stroke: 2px #fff;
-    /* さらに text-shadow で全ブラウザに白フチ（8方向） */
+    font-size:.95rem;font-weight:800;margin:.35rem 0 .4rem;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    position:relative;z-index:1;color:#222 !important;
+    -webkit-text-stroke:2px #fff;
     text-shadow:
       1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff,
       1px 1px #fff,-1px 1px #fff,1px -1px #fff,-1px -1px #fff;
@@ -182,8 +184,11 @@ function createCard({icon,name,twitter,work,feedback}){
   const toFb=document.createElement("a");toFb.className="pill";toFb.textContent="感想へ";toFb.href=feedback||"#";toFb.target="_blank";toFb.rel="noopener";
   pop.appendChild(toWork);pop.appendChild(toFb);wrap.appendChild(pop);
 
-  // 名前（リンクなし・白縁取りあり）
-  const nameEl=document.createElement("div");nameEl.className="name";nameEl.textContent=name||"";card.appendChild(nameEl);
+  // ★ 名前（リンクなし・白縁取りあり）…必ず最後にカードへ追加
+  const nameEl=document.createElement("div");
+  nameEl.className="name";
+  nameEl.textContent=name||"";
+  card.appendChild(nameEl);  // ←これでポップアップの下に配置される
 
   // タッチで開閉（1回目は開くだけ）
   card.addEventListener("touchstart",ev=>{
