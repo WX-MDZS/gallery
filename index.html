@@ -49,14 +49,6 @@ h1{margin:18px 0 8px;font-size:clamp(1.25rem,1.1rem + 1.2vw,1.8rem);text-align:c
 }
 .card:hover,.card:focus-within{transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,0,0,.08)}
 
-/* カード内の雲（薄め） */
-.card::before{
-  content:"";
-  position:absolute;left:0;right:0;bottom:10px;height:40%;
-  background:url("./assets/clouds.png") center bottom/140% auto no-repeat;
-  opacity:.18;pointer-events:none;z-index:1;
-}
-
 /* アイコン */
 .icon-wrap{position:relative;display:inline-block;z-index:20;padding-bottom:12px}
 .icon{
@@ -86,14 +78,11 @@ h1{margin:18px 0 8px;font-size:clamp(1.25rem,1.1rem + 1.2vw,1.8rem);text-align:c
   opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto;
 }
 
-/* 名前：雲より前／ポップより後ろ（被らない） */
+/* 名前（黒文字・装飾なし） */
 .name{
   font-size:.97rem;font-weight:800;margin:.55rem 0 .35rem;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   position:relative;z-index:10;color:var(--text);
-  -webkit-text-stroke:2px #fff;
-  text-shadow:1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff,
-             1px 1px #fff,-1px 1px #fff,1px -1px #fff,-1px -1px #fff;
 }
 
 /* ボタン */
@@ -140,10 +129,9 @@ h1{margin:18px 0 8px;font-size:clamp(1.25rem,1.1rem + 1.2vw,1.8rem);text-align:c
 /* =========================
    設定
 ========================= */
-// 公開CSV（必要なら差し替え）
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
 
-// 6桁ゼロ埋めカウンター（※GitHub Pages では全体集計はできないため、ブラウザ保存の簡易カウンタ）
+/* 簡易カウンター */
 (function counter(){
   try{
     const KEY="yd_gallery_counter_v1";
@@ -151,24 +139,18 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C0
     n += 1;
     localStorage.setItem(KEY, String(n));
     document.getElementById("count").textContent = String(n).padStart(6,"0");
-  }catch(e){
-    // localStorage 不可環境は 000000 表示のまま
-  }
+  }catch(e){}
 })();
 
-/* =========================
-   CSV ロード & カード生成
-========================= */
+/* CSV読み込み */
 async function loadCSV(url){
   const res = await fetch(url, {cache:"no-store"});
-  if(!res.ok) throw new Error("CSV load failed: " + res.status);
   const text = await res.text();
-  // 簡易 CSV パース（カンマ区切り、ダブルクォート対応）
   const rows = [];
   let i = 0, cur = "", inQ = false, row = [];
   while(i < text.length){
     const c = text[i++];
-    if(c === '"'){ inQ = !inQ; cur += ""; continue; }
+    if(c === '"'){ inQ = !inQ; continue; }
     if(!inQ && (c === "," || c === "\n" || c === "\r")){
       row.push(cur.trim()); cur = "";
       if(c === "\n" || c === "\r"){ if(row.length) rows.push(row); row = []; }
@@ -177,7 +159,6 @@ async function loadCSV(url){
     }
   }
   if(cur.length || row.length){ row.push(cur.trim()); rows.push(row); }
-  // 1行目ヘッダ想定
   return rows.filter(r => r.length >= 3).slice(1);
 }
 
@@ -188,14 +169,11 @@ function createCard([iconName, displayName, twitter, work, feedback]){
   const wrap = document.createElement("div");
   wrap.className = "icon-wrap";
 
-  // アイコンに Twitter リンク（要望どおり）
   const tw = document.createElement("a");
   tw.href = twitter || "#";
   tw.target = "_blank"; tw.rel = "noopener";
-  tw.ariaLabel = displayName + " のTwitterへ";
 
   const img = document.createElement("img");
-  // アイコン名は拡張子無しを想定（01 など）
   const file = (iconName || "").replace(/\.(png|jpg|jpeg|webp)$/i,"");
   img.src = "./icons/" + file + ".png";
   img.alt = displayName || "";
@@ -205,13 +183,11 @@ function createCard([iconName, displayName, twitter, work, feedback]){
   wrap.appendChild(tw);
   card.appendChild(wrap);
 
-  // 名前（リンクなし／太字）
   const name = document.createElement("div");
   name.className = "name";
   name.textContent = displayName || "";
   card.appendChild(name);
 
-  // ポップアップ（作品／感想ボタン）
   const pop = document.createElement("div");
   pop.className = "pop";
   const toWork = document.createElement("a");
@@ -223,11 +199,9 @@ function createCard([iconName, displayName, twitter, work, feedback]){
   pop.appendChild(toWork); pop.appendChild(toFb);
   card.appendChild(pop);
 
-  // タップで開閉（1回開く）
   card.addEventListener("touchstart", e=>{
     if(!card.classList.contains("pop-open")) card.classList.add("pop-open");
   }, {passive:true});
-  // Esc で閉じる
   card.addEventListener("keydown", e=>{
     if(e.key==="Escape") card.classList.remove("pop-open");
   });
@@ -242,8 +216,7 @@ function createCard([iconName, displayName, twitter, work, feedback]){
     const rows = await loadCSV(CSV_URL);
     rows.forEach(r => gallery.appendChild(createCard(r)));
   }catch(err){
-    console.error(err);
-    gallery.textContent = "データの読み込みに失敗しました。時間をおいて再度お試しください。";
+    gallery.textContent = "データの読み込みに失敗しました。";
   }
 })();
 </script>
