@@ -70,21 +70,14 @@
   }
 
   /* ポップアップ（アイコン中央に） */
-  .pop{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%) scale(.98);
-    opacity:0; pointer-events:none;
-    background:#fff; color:var(--ink);
-    border:1px solid var(--ring);
-    border-radius:12px;
-    padding:.5rem .6rem;
-    box-shadow:var(--shadow);
-    white-space:nowrap;
-    z-index:10;
-    transition:opacity .15s, transform .15s;
-  }
+  .popup {
+  position: absolute;
+  top: 65%; /* 中央より下に配置 */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 8px;
+}
   .card:hover .pop,
   .card:focus-within .pop,
   .card.pop-open .pop{ opacity:1; pointer-events:auto; transform:translate(-50%,-50%) scale(1); }
@@ -255,3 +248,4 @@ init();
 </script>
 </body>
 </html>
+
