@@ -13,11 +13,11 @@
     --shadow: 0 8px 20px rgba(0,0,0,.10);
   }
 
-  /* ベース */
   *{ box-sizing: border-box }
   body{
-    margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto,
-    "Hiragino Sans","Noto Sans JP","Yu Gothic", Meiryo, sans-serif;
+    margin:0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+      "Hiragino Sans","Noto Sans JP","Yu Gothic", Meiryo, sans-serif;
     color: var(--ink); text-align:center; background:#fff;
   }
 
@@ -28,7 +28,7 @@
   .description{ color:#555; font-size: .95rem; margin: 2px 0 6px }
   .counter{ font-weight:700; margin: 8px 0 22px; font-size: clamp(16px, 2.3vw, 20px) }
 
-  /* 4×8 固定グリッド（PC） / スマホ2列 */
+  /* 4×8 固定（PC）。スマホは2列に崩すだけ、中身は同じ */
   .grid{
     display:grid; gap:24px;
     grid-template-columns: repeat(4, 1fr);
@@ -41,12 +41,11 @@
   .card{
     position:relative; background:#fff; border-radius:16px;
     box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    padding:14px 10px 20px;
+    padding:14px 10px 22px;
     transition: transform .12s ease;
   }
   .card:hover{ transform: translateY(-2px) }
 
-  /* アイコン＆名前 */
   .icon-wrap{ position:relative; display:inline-block }
   .icon{
     width:120px; height:120px; border-radius:50%; object-fit:cover;
@@ -58,6 +57,7 @@
     transform: scale(1.04);
     box-shadow: 0 12px 24px rgba(0,0,0,.12);
   }
+
   .name{
     font-weight:700; margin-bottom:12px;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -67,14 +67,14 @@
   .pop{
     position:absolute; left:50%;
     transform: translateX(-50%) translateY(6px) scale(.98);
-    bottom: 14px; /* カードの下辺から少し上 */
+    bottom: 14px; /* カード下辺から少し上に固定 */
     opacity: 0; pointer-events:none;
     background:#fff; border:1px solid var(--ring); border-radius:12px;
     padding: .5rem .6rem; white-space:nowrap; z-index: 10;
     box-shadow: var(--shadow);
     transition: opacity .15s, transform .15s;
   }
-  /* ホバー/フォーカス/開いている時に表示 */
+  /* マウスホバー / キーボードフォーカス / タップで開いてる時 */
   .card:hover .pop,
   .card:focus-within .pop,
   .card.pop-open .pop{
@@ -83,7 +83,6 @@
     pointer-events:auto;
   }
 
-  /* ボタン（作品へ / 感想へ） */
   .pill{
     display:inline-block; font-size:.9rem; padding:.35rem .7rem; margin:0 .2rem;
     border-radius:999px; text-decoration:none;
@@ -92,7 +91,6 @@
   }
   .pill:hover{ background: rgba(103,167,186,.15) }
 
-  /* アクセシビリティ：キーボード操作時 */
   .icon-link:focus-visible, .pill:focus-visible{
     outline: 2px solid var(--accent); outline-offset: 2px; border-radius:12px;
   }
@@ -103,6 +101,7 @@
 <body>
 
 <header>
+  <!-- タイトル画像（雲は出しません） -->
   <img src="assets/title.jpg" alt="雲隠深情">
 </header>
 
@@ -110,76 +109,136 @@
 <p class="description">アイコン＝X、ポップアップのボタン＝作品・感想</p>
 <p class="counter">あなたは「<span id="visitor-count">000000</span>」人目の姑蘇藍氏の弟子</p>
 
-<!-- 4×8 = 32件  -->
-<div class="grid">
-  <!-- 1 -->
-  <div class="card">
-    <div class="icon-wrap">
-      <a class="icon-link" href="#" aria-label="Xへ"><img class="icon" src="icons/01.png" alt="HellingLaozu"></a>
-    </div>
-    <div class="name">HellingLaozu</div>
-    <div class="pop" role="dialog" aria-label="ショートメニュー">
-      <a class="pill" href="#">作品へ</a>
-      <a class="pill" href="#">感想へ</a>
-    </div>
-  </div>
-
-  <!-- 2〜32：必要に応じてURLとファイル名を差し替え -->
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/02.png" alt="kikuchi"></a></div><div class="name">kikuchi</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/03.png" alt="mura"></a></div><div class="name">mura</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/04.png" alt="R"></a></div><div class="name">R</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/05.png" alt="TUDURI"></a></div><div class="name">TUDURI</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/06.png" alt="石川"></a></div><div class="name">石川</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/07.png" alt="宴側"></a></div><div class="name">宴側</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/08.png" alt="かた吉"></a></div><div class="name">かた吉</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/09.png" alt="こま"></a></div><div class="name">こま</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/10.png" alt="ゴン"></a></div><div class="name">ゴン</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/11.png" alt="香也"></a></div><div class="name">香也</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/12.png" alt="蟬蟬"></a></div><div class="name">蟬蟬</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/13.png" alt="しあん"></a></div><div class="name">しあん</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/14.png" alt="シギ"></a></div><div class="name">シギ</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/15.png" alt="絲"></a></div><div class="name">絲</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
-
-  <!-- ここから 16〜32 も同様に複製。既存32枚あるならファイル名だけ合わせてOK -->
-  <!-- …省略（必要数だけコピペして32まで作成してください）… -->
-</div>
+<!-- CSV から生成 -->
+<div id="grid" class="grid" aria-live="polite"></div>
 
 <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-  // 訪問者カウンター（localStorage）
+  /*************** 訪問カウンター（localStorage） ***************/
   const counterEl = document.getElementById('visitor-count');
   let count = Number(localStorage.getItem('visitCount') || 0) + 1;
   localStorage.setItem('visitCount', count);
   counterEl.textContent = String(count).padStart(6, '0');
 
-  // タップでポップアップを開閉（スマホ用）
-  document.querySelectorAll('.card').forEach(card=>{
-    // 1タップ目で開く、外側タップで閉じる
-    card.addEventListener('touchstart', e=>{
-      if(!card.classList.contains('pop-open')){
-        // まず全て閉じる
-        document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
-        card.classList.add('pop-open');
-        e.preventDefault();
+  /*************** 設定：CSVの公開URL ***************/
+  // ←ここをあなたの「公開されたCSV」のURLに置き換え
+  // 例）https://docs.google.com/spreadsheets/d/e/XXXX/pub?gid=0&single=true&output=csv
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv';
+
+  /*************** ざっくりCSVパーサ（"でくくられたカンマ対応） ***************/
+  function parseCSV(text){
+    const rows = [];
+    let i = 0, field = '', row = [], inQuotes = false;
+
+    while (i < text.length){
+      const c = text[i];
+      if (inQuotes){
+        if (c === '"'){
+          if (text[i+1] === '"'){ field += '"'; i++; } // エスケープ（""）
+          else { inQuotes = false; }
+        } else {
+          field += c;
+        }
+      } else {
+        if (c === '"'){ inQuotes = true; }
+        else if (c === ','){ row.push(field); field = ''; }
+        else if (c === '\n' || c === '\r'){
+          if (field !== '' || row.length){ row.push(field); rows.push(row); }
+          field = ''; row = [];
+          // CRLF 対応
+          if (c === '\r' && text[i+1] === '\n') i++;
+        } else {
+          field += c;
+        }
       }
-    }, {passive:false});
-  });
-
-  // どこか別の場所をタップしたら閉じる
-  document.addEventListener('touchstart', e=>{
-    const inCard = e.target.closest('.card');
-    if(!inCard){
-      document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+      i++;
     }
-  }, {passive:true});
+    if (field !== '' || row.length){ row.push(field); rows.push(row); }
+    return rows;
+  }
 
-  // ESCで閉じる（キーボード操作）
-  document.addEventListener('keydown', e=>{
-    if(e.key === 'Escape'){
-      document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+  /*************** カードHTML生成 ***************/
+  function makeCard({icon, name, x, work, feedback}){
+    // アイコン名が "01" 形式なら .png を補完。拡張子が含まれている場合はそのまま
+    const hasExt = /\.[a-zA-Z0-9]+$/.test(icon);
+    const iconPath = 'icons/' + icon + (hasExt ? '' : '.png');
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="icon-wrap">
+        <a class="icon-link" href="${x || '#'}" target="_blank" rel="noopener" aria-label="${name} のXへ">
+          <img class="icon" src="${iconPath}" alt="${name}">
+        </a>
+      </div>
+      <div class="name">${name || ''}</div>
+      <div class="pop" role="dialog" aria-label="${name} のメニュー">
+        <a class="pill" href="${work || '#'}" target="_blank" rel="noopener">作品へ</a>
+        <a class="pill" href="${feedback || '#'}" target="_blank" rel="noopener">感想へ</a>
+      </div>
+    `;
+    return card;
+  }
+
+  /*************** CSV 読み込み → 4×8=32人 生成 ***************/
+  async function init(){
+    const grid = document.getElementById('grid');
+    grid.textContent = '読み込み中…';
+    try{
+      const res = await fetch(CSV_URL, {cache:'no-store'});
+      const text = await res.text();
+      const rows = parseCSV(text);
+
+      // 1行目がヘッダ想定。2行目以降を使う
+      const dataRows = rows.slice(1).filter(r => r && r.length > 0);
+
+      // A:アイコン名 / B:名前 / C:X / D:作品 / E:感想
+      const items = dataRows.map(r => ({
+        icon: (r[0] || '').trim(),
+        name: (r[1] || '').trim(),
+        x: (r[2] || '').trim(),
+        work: (r[3] || '').trim(),
+        feedback: (r[4] || '').trim(),
+      })).slice(0, 32); // 32件に制限
+
+      grid.textContent = '';
+      if (items.length === 0){
+        grid.textContent = 'データが見つかりません。';
+        return;
+      }
+      items.forEach(item => grid.appendChild(makeCard(item)));
+
+      // スマホ：タップでポップアップ開閉（1件ずつ）
+      document.querySelectorAll('.card').forEach(card=>{
+        card.addEventListener('touchstart', e=>{
+          if(!card.classList.contains('pop-open')){
+            document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+            card.classList.add('pop-open');
+            e.preventDefault();
+          }
+        }, {passive:false});
+      });
+      // 外側タップで閉じる
+      document.addEventListener('touchstart', e=>{
+        const inCard = e.target.closest('.card');
+        if(!inCard){
+          document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+        }
+      }, {passive:true});
+      // ESCで閉じる
+      document.addEventListener('keydown', e=>{
+        if(e.key === 'Escape'){
+          document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+        }
+      });
+
+    }catch(err){
+      grid.textContent = '読み込みでエラーが発生しました。CSVの公開設定とURLをご確認ください。';
+      console.error(err);
     }
-  });
+  }
+  init();
 </script>
 
 </body>
