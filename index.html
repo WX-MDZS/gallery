@@ -3,230 +3,255 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta http-equiv="Cache-Control" content="no-store, max-age=0" />
-<title>雲隠深情</title>
+<title>雲隠深情 | 作品一覧</title>
 <style>
   :root{
-    --accent: rgb(103,167,186);       /* R103 G167 B186（ボタン色/ホバー色） */
-    --ring:   #cfe6f0;                 /* 枠の淡い水色 */
-    --ink:    #222;                    /* 文字色 */
-    --shadow: 0 8px 20px rgba(0,0,0,.10);
+    --ink:#222;
+    --muted:#667085;
+    --ring:#cfe6ef;
+    --pill: rgb(103,167,186);         /* R103 G167 B186 */
+    --pill-weak: rgba(103,167,186,.15);
+    --shadow: 0 8px 24px rgba(0,0,0,.08);
+    --card: #fff;
+    --bg: #fff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", Arial, sans-serif}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%;height:auto}
+
+  header{padding:20px 16px 0}
+  .logo{max-width:720px;width:92%;margin:0 auto 8px}
+
+  main{max-width:1100px;margin:0 auto;padding:8px 16px 40px}
+
+  h1{font-size:clamp(20px,2.2vw,28px);text-align:center;margin:6px 0 2px}
+  .desc{color:var(--muted);text-align:center;margin:4px 0 12px;font-size:.95rem}
+  .counter{font-weight:700;text-align:center;margin:10px 0 24px;font-size:1.05rem}
+
+  /* グリッド：PCは4列固定／モバイルは2列 */
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:28px 28px;
+    justify-items:center;
+  }
+  @media (max-width: 720px){
+    .gallery{grid-template-columns:repeat(2, 1fr);gap:22px 16px}
   }
 
-  *{ box-sizing: border-box }
-  body{
-    margin:0; background:#fff; color:var(--ink);
-    font-family: system-ui,-apple-system,"Segoe UI",Roboto,
-      "Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  /* カード */
+  .card{
+    position:relative;
+    width:240px;                         /* 列幅を揃える */
+    background:var(--card);
+    border:1px solid #eef3f6;
+    border-radius:16px;
+    padding:18px 16px 20px;
+    box-shadow:0 2px 6px rgba(0,0,0,.04);
     text-align:center;
   }
-
-  /* 余計な背景は一切出さない（雲は使わない） */
-  body::before, body::after{ content:none !important }
-
-  header{ padding:22px 12px 10px }
-  /* ロゴ（雲画像と間違えないようtitle.jpgを明示） */
-  .logo{ max-width:920px; width:92%; height:auto; display:block; margin:0 auto }
-
-  h2{ margin:10px 0 6px; font-size:clamp(18px,2.8vw,26px) }
-  .description{ color:#555; font-size:.95rem; margin:2px 0 6px }
-  .counter{ font-weight:700; margin:10px 0 22px; font-size:clamp(16px,2.3vw,20px) }
-
-  /* 4×8 固定（PC）/ スマホは2列 */
-  .grid{
-    display:grid; gap:24px;
-    grid-template-columns:repeat(4,1fr);
-    max-width:980px; margin:0 auto 44px; padding:0 16px;
-  }
-  @media (max-width:640px){
-    .grid{ grid-template-columns:repeat(2,1fr); gap:18px }
-  }
-
-  .card{
-    position:relative; background:#fff; border-radius:16px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-    padding:14px 10px 28px; transition:transform .12s ease;
-  }
-  .card:hover{ transform: translateY(-2px) }
-
-  .icon-wrap{ position:relative; display:inline-block }
+  .icon-wrap{position:relative; display:inline-block; width:128px;height:128px}
   .icon{
-    width:120px; height:120px; border-radius:50%; object-fit:cover;
-    border:2px solid var(--ring); display:block; margin:6px auto 10px;
-    box-shadow:0 6px 12px rgba(0,0,0,.06);
-    transition: transform .18s ease, box-shadow .18s ease;
+    width:128px;height:128px;object-fit:cover;border-radius:50%;
+    border:3px solid var(--ring); transition:transform .18s, filter .18s, box-shadow .18s;
+    box-shadow:0 3px 10px rgba(0,0,0,.06);
   }
-  .card:hover .icon, .card:focus-within .icon{
+  .card:hover .icon,
+  .card:focus-within .icon{
     transform:scale(1.04);
-    /* 淡い水色の影 */
-    box-shadow: 0 12px 24px rgba(103,167,186,.25);
+    box-shadow:0 12px 28px rgba(103,167,186,.18);
+    filter:saturate(1.03);
   }
 
   .name{
-    font-weight:700; margin-bottom:14px;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    color:var(--ink);
+    margin:.7rem 0 0;
+    font-weight:700;
   }
 
-  /* ポップアップ（白地＋黒文字） */
+  /* ポップアップ（アイコン中央に） */
   .pop{
-    position:absolute; left:50%;
-    transform: translateX(-50%) translateY(6px) scale(.98);
-    bottom:16px;
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%) scale(.98);
     opacity:0; pointer-events:none;
     background:#fff; color:var(--ink);
-    border:1px solid var(--ring); border-radius:12px;
-    padding:.5rem .6rem; white-space:nowrap; z-index:10;
-    box-shadow: var(--shadow);
-    transition: opacity .15s, transform .15s;
+    border:1px solid var(--ring);
+    border-radius:12px;
+    padding:.5rem .6rem;
+    box-shadow:var(--shadow);
+    white-space:nowrap;
+    z-index:10;
+    transition:opacity .15s, transform .15s;
   }
   .card:hover .pop,
   .card:focus-within .pop,
-  .card.pop-open .pop{
-    opacity:1; pointer-events:auto;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
+  .card.pop-open .pop{ opacity:1; pointer-events:auto; transform:translate(-50%,-50%) scale(1); }
 
-  /* ボタンはアクセント色で統一 */
   .pill{
-    display:inline-block; font-size:.9rem; padding:.35rem .7rem; margin:0 .2rem;
-    border-radius:999px; text-decoration:none;
-    border:1px solid var(--accent); color:var(--accent); background:#f8fafc;
-    transition: background .12s, border-color .12s, color .12s;
+    display:inline-block;
+    font-size:.88rem;
+    padding:.36rem .72rem;
+    margin:0 .15rem;
+    border-radius:999px;
+    border:1px solid var(--pill);
+    color:var(--pill);
+    background:#f8fafc;
+    transition:background .12s, border-color .12s, color .12s;
   }
-  .pill:hover{ background: rgba(103,167,186,.15) }
+  .pill:hover{ background:var(--pill-weak); border-color:var(--pill); color:var(--pill); }
+  .pill[aria-disabled="true"]{opacity:.45; pointer-events:none}
 
-  .icon-link:focus-visible, .pill:focus-visible{
-    outline:2px solid var(--accent); outline-offset:2px; border-radius:12px;
-  }
-
-  footer{ margin:28px 0 22px; color:#666; font-size:.9rem }
+  footer{margin:40px 0 20px;text-align:center;color:#667085;font-size:.9rem}
 </style>
 </head>
 <body>
+  <header>
+    <img class="logo" src="assets/title.jpg" alt="雲隠深情" />
+  </header>
 
-<header>
-  <!-- ロゴは必ず assets/title.jpg にしてね -->
-  <img class="logo" src="assets/title.jpg" alt="雲隠深情">
-</header>
+  <main>
+    <h1>作品一覧</h1>
+    <div class="desc">アイコン＝X、ポップアップのボタン＝作品・感想</div>
+    <div class="counter">あなたは「<span id="visitor">000000</span>」人目の姑蘇藍氏の弟子</div>
 
-<h2>企画参加者の作品一覧</h2>
-<p class="description">アイコン＝Twitter、ポップアップのボタン＝作品／感想</p>
+    <section id="grid" class="gallery" aria-live="polite"></section>
+  </main>
 
-<p class="counter">あなたは「<span id="visitor-count">000000</span>」人目の姑蘇藍氏の弟子</p>
-
-<div id="grid" class="grid" aria-live="polite"></div>
-
-<footer>雲隠探情企画 / 主催はくと</footer>
+  <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-  /* ========= 訪問カウンター ========= */
-  const counterEl = document.getElementById('visitor-count');
-  let cnt = Number(localStorage.getItem('visitCount')||0) + 1;
-  localStorage.setItem('visitCount', cnt);
-  counterEl.textContent = String(cnt).padStart(6,'0');
+/* ========= 設定 ========= */
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
+/* ======================= */
 
-  /* ========= 公開CSV（必要なら差し替え） ========= */
-  const CSV_URL =
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv';
-
-  /* ========= CSVパース（ダブルクォート対応） ========= */
-  function parseCSV(text){
-    const rows=[]; let i=0, field='', row=[], inQ=false;
-    if(text.charCodeAt(0)===0xFEFF) text = text.slice(1); // BOM
-    while(i<text.length){
-      const c=text[i];
-      if(inQ){
-        if(c=='"'){ if(text[i+1]=='"'){ field+='"'; i++; } else inQ=false; }
-        else field+=c;
-      }else{
-        if(c=='"') inQ=true;
-        else if(c==','){ row.push(field); field=''; }
-        else if(c=='\n'||c=='\r'){
-          if(field!==''||row.length){ row.push(field); rows.push(row); }
-          field=''; row=[]; if(c=='\r' && text[i+1]=='\n') i++;
-        }else field+=c;
-      }
-      i++;
+/* 簡易CSVパーサ（カンマ/改行対応） */
+function parseCSV(text){
+  const rows=[]; let cur="", cell="", inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(inQ){
+      if(c==='"' && n==='"'){ cell+='"'; i++; }
+      else if(c==='"'){ inQ=false; }
+      else{ cell+=c; }
+    }else{
+      if(c==='"'){ inQ=true; }
+      else if(c===','){ cur+=(cell); rows.push(cur); cur=""; cell=""; }
+      else if(c==='\n'){ cur+=(cell); rows.push(cur); cur=""; cell=""; rows.push("\n"); }
+      else{ cell+=c; }
     }
-    if(field!==''||row.length){ row.push(field); rows.push(row); }
-    return rows;
   }
-
-  /* ========= カード生成 ========= */
-  function makeCard({icon,name,x,work,feedback}){
-    const hasExt = /\.[a-zA-Z0-9]+$/.test(icon||'');
-    const iconPath = 'icons/' + (icon||'') + (icon && !hasExt ? '.png' : '');
-
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="icon-wrap">
-        <a class="icon-link" href="${x||'#'}" target="_blank" rel="noopener" aria-label="${name} のTwitterへ">
-          <img class="icon" src="${iconPath}" alt="${name}">
-        </a>
-      </div>
-      <div class="name">${name||''}</div>
-      <div class="pop" role="dialog" aria-label="${name} のメニュー">
-        <a class="pill" href="${work||'#'}" target="_blank" rel="noopener">作品へ</a>
-        <a class="pill" href="${feedback||'#'}" target="_blank" rel="noopener">感想へ</a>
-      </div>
-    `;
-    return card;
+  cur+=cell; rows.push(cur);
+  // 1次配列から2次配列へ
+  const out=[]; let line=[];
+  for(const t of rows){
+    if(t==="\n"){ out.push(line); line=[]; }
+    else line.push(t);
   }
+  if(line.length) out.push(line);
+  return out;
+}
 
-  /* ========= 読み込み・整形・描画（32件ちょうど） ========= */
-  async function init(){
-    const grid = document.getElementById('grid');
-    grid.textContent = '読み込み中…';
-    try{
-      const res = await fetch(CSV_URL, {cache:'no-store'});
-      if(!res.ok) throw new Error(res.status+' '+res.statusText);
-      const text = await res.text();
-      const rows = parseCSV(text);
+/* カードHTML生成 */
+function makeCard(d){
+  const wrap = document.createElement('article');
+  wrap.className = 'card';
 
-      const data = rows.slice(1).map(r=>({
+  // アイコン（クリックでXへ）
+  const iconWrap = document.createElement('a');
+  iconWrap.className = 'icon-wrap';
+  iconWrap.href = d.x || '#';
+  iconWrap.target = d.x ? '_blank' : '_self';
+  iconWrap.rel = d.x ? 'noopener' : '';
+  iconWrap.ariaLabel = d.name + ' のX(Twitter)';
+
+  const img = document.createElement('img');
+  img.className = 'icon';
+  img.alt = d.name;
+  img.src = `icons/${d.icon}`;
+  iconWrap.appendChild(img);
+
+  // ポップアップ（作品/感想）
+  const pop = document.createElement('div');
+  pop.className = 'pop';
+  const toWork = document.createElement('a');
+  toWork.className = 'pill';
+  toWork.textContent = '作品へ';
+  if(d.work){ toWork.href = d.work; toWork.target = '_blank'; toWork.rel = 'noopener'; }
+  else{ toWork.setAttribute('aria-disabled','true'); }
+  const toFb = document.createElement('a');
+  toFb.className = 'pill';
+  toFb.textContent = '感想へ';
+  if(d.feedback){ toFb.href = d.feedback; toFb.target = '_blank'; toFb.rel = 'noopener'; }
+  else{ toFb.setAttribute('aria-disabled','true'); }
+  pop.appendChild(toWork); pop.appendChild(toFb);
+
+  iconWrap.appendChild(pop);
+  wrap.appendChild(iconWrap);
+
+  // 名前（リンクなし・太字）
+  const name = document.createElement('div');
+  name.className = 'name';
+  name.textContent = d.name || '';
+  wrap.appendChild(name);
+
+  // タッチで開閉（1回だけ）
+  wrap.addEventListener('touchstart', e=>{
+    if(!wrap.classList.contains('pop-open')){
+      wrap.classList.add('pop-open');
+      setTimeout(()=>wrap.classList.remove('pop-open'), 1200);
+    }
+  }, {passive:true});
+
+  // Escで閉じる
+  wrap.addEventListener('keydown', e=>{
+    if(e.key==='Escape') wrap.classList.remove('pop-open');
+  });
+
+  return wrap;
+}
+
+/* CSV 読み込み＆描画（先頭行もデータ扱い・空行のみ除外） */
+async function init(){
+  // 訪問カウンタ
+  try{
+    const vEl = document.getElementById('visitor');
+    let v = Number(localStorage.getItem('visitCount')||0) + 1;
+    localStorage.setItem('visitCount', String(v));
+    vEl.textContent = String(v).padStart(6,'0');
+  }catch(_){}
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  try{
+    const res = await fetch(CSV_URL, {cache:'no-store'});
+    const text = await res.text();
+    const rows = parseCSV(text);
+
+    const data = rows
+      .map(r=>({
         icon:(r[0]||'').trim(),
         name:(r[1]||'').trim(),
         x:(r[2]||'').trim(),
         work:(r[3]||'').trim(),
         feedback:(r[4]||'').trim(),
       }))
-      .filter(d => d.icon || d.name || d.x || d.work || d.feedback) // 完全空行除外
-      .slice(0,32); // 32人に揃える
+      .filter(d => d.icon || d.name || d.x || d.work || d.feedback) // 完全空行だけ除外
+      .slice(0, 32); // 32名に揃える
 
-      grid.textContent='';
-      data.forEach(d => grid.appendChild(makeCard(d)));
-
-      /* タッチ：カード空白タップでポップ開閉（リンクはそのまま遷移） */
-      document.querySelectorAll('.card').forEach(card=>{
-        card.addEventListener('touchstart', e=>{
-          if(e.target.closest('a')) return;   // 作品/感想/アイコンのリンクは遷移
-          if(!card.classList.contains('pop-open')){
-            document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
-            card.classList.add('pop-open');
-            e.preventDefault();
-          }
-        }, {passive:false});
-      });
-      document.addEventListener('touchstart', e=>{
-        if(!e.target.closest('.card')){
-          document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
-        }
-      }, {passive:true});
-      document.addEventListener('keydown', e=>{
-        if(e.key==='Escape'){
-          document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
-        }
-      });
-
-    }catch(err){
-      console.error(err);
-      grid.textContent = '読み込みエラー。CSVの公開設定とURLをご確認ください。';
+    // EastBud を含む全員を描画
+    for(const d of data){
+      grid.appendChild(makeCard(d));
     }
+  }catch(err){
+    console.error(err);
+    grid.innerHTML = '<p>データの読み込みに失敗しました。</p>';
   }
-  init();
-</script>
+}
 
+init();
+</script>
 </body>
 </html>
