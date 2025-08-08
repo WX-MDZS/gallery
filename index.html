@@ -1,102 +1,103 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Cache-Control" content="no-store, max-age=0" />
 <title>雲隠深情</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #fff;
-    margin: 0;
-    padding: 0;
-    text-align: center;
+  :root{
+    --accent: rgb(103,167,186); /* R103 G167 B186 */
+    --ring:   #cfe6f0;
+    --ink:    #222;
+    --shadow: 0 8px 20px rgba(0,0,0,.10);
   }
 
-  /* 背景の雲 */
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('assets/clouds.png') repeat-x;
-    background-size: cover;
-    opacity: 0.4;
-    z-index: -1;
+  /* ベース */
+  *{ box-sizing: border-box }
+  body{
+    margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+    "Hiragino Sans","Noto Sans JP","Yu Gothic", Meiryo, sans-serif;
+    color: var(--ink); text-align:center; background:#fff;
   }
 
-  header img {
-    max-width: 90%;
-    height: auto;
-    margin-top: 20px;
+  header{ padding: 24px 12px 8px }
+  header img{ max-width: 920px; width: 92%; height:auto; display:block; margin:0 auto }
+
+  h2{ margin: 8px 0 4px; font-size: clamp(18px, 2.8vw, 26px) }
+  .description{ color:#555; font-size: .95rem; margin: 2px 0 6px }
+  .counter{ font-weight:700; margin: 8px 0 22px; font-size: clamp(16px, 2.3vw, 20px) }
+
+  /* 4×8 固定グリッド（PC） / スマホ2列 */
+  .grid{
+    display:grid; gap:24px;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 980px; margin: 0 auto 44px; padding: 0 16px;
+  }
+  @media (max-width: 640px){
+    .grid{ grid-template-columns: repeat(2, 1fr); gap:18px }
   }
 
-  h2 {
-    margin-top: 10px;
+  .card{
+    position:relative; background:#fff; border-radius:16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    padding:14px 10px 20px;
+    transition: transform .12s ease;
+  }
+  .card:hover{ transform: translateY(-2px) }
+
+  /* アイコン＆名前 */
+  .icon-wrap{ position:relative; display:inline-block }
+  .icon{
+    width:120px; height:120px; border-radius:50%; object-fit:cover;
+    border: 2px solid var(--ring); display:block; margin: 6px auto 8px;
+    box-shadow: 0 6px 12px rgba(0,0,0,.06);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover .icon, .card:focus-within .icon{
+    transform: scale(1.04);
+    box-shadow: 0 12px 24px rgba(0,0,0,.12);
+  }
+  .name{
+    font-weight:700; margin-bottom:12px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
 
-  .description {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 10px;
+  /* ポップアップ（初期は非表示） */
+  .pop{
+    position:absolute; left:50%;
+    transform: translateX(-50%) translateY(6px) scale(.98);
+    bottom: 14px; /* カードの下辺から少し上 */
+    opacity: 0; pointer-events:none;
+    background:#fff; border:1px solid var(--ring); border-radius:12px;
+    padding: .5rem .6rem; white-space:nowrap; z-index: 10;
+    box-shadow: var(--shadow);
+    transition: opacity .15s, transform .15s;
+  }
+  /* ホバー/フォーカス/開いている時に表示 */
+  .card:hover .pop,
+  .card:focus-within .pop,
+  .card.pop-open .pop{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    pointer-events:auto;
   }
 
-  .counter {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 10px 0 20px 0; /* 下に余白を追加 */
-  }
-
-  .pill {
-    display: inline-block;
-    font-size: .85rem;
-    padding: .3rem .6rem;
-    margin: 0 .15rem;
-    border-radius: 999px;
-    border: 1px solid rgb(103,167,186); /* 枠色 */
-    text-decoration: none;
-    color: rgb(103,167,186); /* 文字色 */
-    background: #f8fafc;
+  /* ボタン（作品へ / 感想へ） */
+  .pill{
+    display:inline-block; font-size:.9rem; padding:.35rem .7rem; margin:0 .2rem;
+    border-radius:999px; text-decoration:none;
+    border:1px solid var(--accent); color:var(--accent); background:#f8fafc;
     transition: background .12s, border-color .12s, color .12s;
   }
+  .pill:hover{ background: rgba(103,167,186,.15) }
 
-  .pill:hover {
-    background: rgba(103,167,186, 0.15); /* 淡い水色背景 */
-    border-color: rgb(103,167,186);
-    color: rgb(103,167,186);
+  /* アクセシビリティ：キーボード操作時 */
+  .icon-link:focus-visible, .pill:focus-visible{
+    outline: 2px solid var(--accent); outline-offset: 2px; border-radius:12px;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-
-  .card img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #cce4f6;
-  }
-
-  footer {
-    margin: 40px 0 20px;
-    font-size: 0.85rem;
-    color: #555;
-  }
+  footer{ margin: 28px 0 22px; color:#666; font-size:.9rem }
 </style>
 </head>
 <body>
@@ -105,33 +106,80 @@
   <img src="assets/title.jpg" alt="雲隠深情">
 </header>
 
-<h2>企画参加者の作品一覧</h2>
+<h2>作品一覧</h2>
 <p class="description">アイコン＝X、ポップアップのボタン＝作品・感想</p>
-
 <p class="counter">あなたは「<span id="visitor-count">000000</span>」人目の姑蘇藍氏の弟子</p>
 
+<!-- 4×8 = 32件  -->
 <div class="grid">
-  <!-- 参加者カード例 -->
+  <!-- 1 -->
   <div class="card">
-    <img src="icons/sample1.jpg" alt="EastBud">
-    <div>EastBud</div>
-    <a href="#" class="pill">作品へ</a>
-    <a href="#" class="pill">感想へ</a>
+    <div class="icon-wrap">
+      <a class="icon-link" href="#" aria-label="Xへ"><img class="icon" src="icons/01.png" alt="HellingLaozu"></a>
+    </div>
+    <div class="name">HellingLaozu</div>
+    <div class="pop" role="dialog" aria-label="ショートメニュー">
+      <a class="pill" href="#">作品へ</a>
+      <a class="pill" href="#">感想へ</a>
+    </div>
   </div>
-  <!-- 以降、他の参加者カード -->
+
+  <!-- 2〜32：必要に応じてURLとファイル名を差し替え -->
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/02.png" alt="kikuchi"></a></div><div class="name">kikuchi</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/03.png" alt="mura"></a></div><div class="name">mura</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/04.png" alt="R"></a></div><div class="name">R</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/05.png" alt="TUDURI"></a></div><div class="name">TUDURI</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/06.png" alt="石川"></a></div><div class="name">石川</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/07.png" alt="宴側"></a></div><div class="name">宴側</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/08.png" alt="かた吉"></a></div><div class="name">かた吉</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/09.png" alt="こま"></a></div><div class="name">こま</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/10.png" alt="ゴン"></a></div><div class="name">ゴン</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/11.png" alt="香也"></a></div><div class="name">香也</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/12.png" alt="蟬蟬"></a></div><div class="name">蟬蟬</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/13.png" alt="しあん"></a></div><div class="name">しあん</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/14.png" alt="シギ"></a></div><div class="name">シギ</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+  <div class="card"><div class="icon-wrap"><a class="icon-link" href="#"><img class="icon" src="icons/15.png" alt="絲"></a></div><div class="name">絲</div><div class="pop"><a class="pill" href="#">作品へ</a><a class="pill" href="#">感想へ</a></div></div>
+
+  <!-- ここから 16〜32 も同様に複製。既存32枚あるならファイル名だけ合わせてOK -->
+  <!-- …省略（必要数だけコピペして32まで作成してください）… -->
 </div>
 
-<footer>
-  雲隠探情企画 / 主催はくと
-</footer>
+<footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-  // 訪問者カウンター（localStorageベースの簡易版）
+  // 訪問者カウンター（localStorage）
   const counterEl = document.getElementById('visitor-count');
-  let count = localStorage.getItem('visitCount') || 0;
-  count++;
+  let count = Number(localStorage.getItem('visitCount') || 0) + 1;
   localStorage.setItem('visitCount', count);
-  counterEl.textContent = count.toString().padStart(6, '0');
+  counterEl.textContent = String(count).padStart(6, '0');
+
+  // タップでポップアップを開閉（スマホ用）
+  document.querySelectorAll('.card').forEach(card=>{
+    // 1タップ目で開く、外側タップで閉じる
+    card.addEventListener('touchstart', e=>{
+      if(!card.classList.contains('pop-open')){
+        // まず全て閉じる
+        document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+        card.classList.add('pop-open');
+        e.preventDefault();
+      }
+    }, {passive:false});
+  });
+
+  // どこか別の場所をタップしたら閉じる
+  document.addEventListener('touchstart', e=>{
+    const inCard = e.target.closest('.card');
+    if(!inCard){
+      document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+    }
+  }, {passive:true});
+
+  // ESCで閉じる（キーボード操作）
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.card.pop-open').forEach(c=>c.classList.remove('pop-open'));
+    }
+  });
 </script>
 
 </body>
