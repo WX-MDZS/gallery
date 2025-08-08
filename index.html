@@ -6,19 +6,26 @@
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto;color:var(--text);background:var(--bg)}
 
-  /* ==== ヒーロー（雲＋ロゴ） ==== */
+  /* ==== ヒーロー（雲＝背景、ロゴ＝前面img） ==== */
   .hero{max-width:1100px;margin:24px auto 8px;padding:0 16px}
-  .hero-box{position:relative;height:clamp(160px,24vw,300px)}
-  .hero-clouds,.hero-title{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-  .hero-clouds{opacity:.95;z-index:0;animation:floatY 9s ease-in-out infinite}
-  .hero-title{z-index:1}
-  @keyframes floatY{from{transform:translateY(0)}50%{transform:translateY(6px)}to{transform:translateY(0)}}
+  .hero-box{
+    position:relative;
+    height:clamp(160px,24vw,300px);
+    background: url("./assets/clouds.png") center/contain no-repeat; /* ← 雲 */
+  }
+  .hero-title{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:contain; z-index:1;
+  }
 
-  /* ==== 見出し ==== */
-  header{text-align:center;padding:1rem 1rem 1rem}
-  header h1{margin:0 0 .4rem;font-size:clamp(1.2rem,2.6vw,1.7rem)}
-  header p{margin:.2rem 0 0;color:var(--muted)}
-  .wrap{max-width:1100px;margin:0 auto;padding:0 1rem 2rem}
+  /* ==== 見出し ===== */
+  header{ text-align:center; padding:1rem 1rem .2rem }
+  header h1{ margin:0 0 .4rem; font-size:clamp(1.2rem,2.6vw,1.7rem) }
+  .lead{ margin:.2rem 0 1.1rem; color:var(--muted) }
+  .counter-line{ font-weight:600; margin:.3rem 0 0 }
+  .counter-line .num{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; letter-spacing:.06em }
+
+  .wrap{max-width:1100px;margin:0 auto;padding:0 1rem 2.4rem}
 
   /* ==== ギャラリー（4列固定／中央寄せ） ==== */
   .gallery{display:grid;gap:1.5rem;grid-template-columns:repeat(4,180px);justify-content:center}
@@ -38,22 +45,26 @@
   .pill{display:inline-block;font-size:.85rem;padding:.3rem .6rem;margin:0 .15rem;border-radius:999px;border:1px solid var(--ring);text-decoration:none;color:#2563eb;background:#f8fafc;transition:background .12s,border-color .12s}
   .pill:hover{background:#eef2ff;border-color:#c7d2fe}
 
+  /* スマホは2列に */
   @media (max-width:520px){.gallery{grid-template-columns:repeat(2,160px)}.card{width:160px}}
   @media (prefers-reduced-motion:reduce){.card,.icon{transition:none!important}}
+
+  /* ==== フッター ==== */
+  footer{border-top:1px solid var(--ring);padding:1rem 1rem; text-align:center; color:#6b7280; font-size:.92rem}
 </style>
 </head><body>
 
-<!-- ★ ヒーロー：雲＋ロゴ（両方 <img> で重ねる） -->
+<!-- ★ ヒーロー：雲＝背景、ロゴ＝画像 -->
 <div class="hero">
   <div class="hero-box">
-    <img class="hero-clouds" src="./assets/clouds.png" alt="雲の装飾">
-    <img class="hero-title"  src="./assets/title.jpg"  alt="雲隠深情"> <!-- PNGなら .png に変更 -->
+    <img class="hero-title" src="./assets/title.jpg" alt="雲隠深情"> <!-- PNGなら .png に -->
   </div>
 </div>
 
 <header>
   <h1>企画参加者の作品一覧</h1>
-  <p>アイコン＝Twitter、ポップアップのボタン＝作品／感想</p>
+  <p class="lead">アイコン＝X、ポップアップのボタン＝作品・感想</p>
+  <p class="counter-line">あなたは「<span id="hit" class="num">000000</span>」人目の姑蘇藍氏の弟子</p>
 </header>
 
 <div class="wrap">
@@ -61,8 +72,26 @@
   <div id="empty" style="text-align:center;color:#666;padding:2rem" hidden>データを読み込めませんでした。</div>
 </div>
 
+<footer>雲隠探情企画 / 主催 はくと</footer>
+
 <script>
-// CSV公開URL
+/* ========= 訪問カウンター（CountAPI を利用） =========
+   GitHub Pages はサーバーが無いので、無料の CountAPI を使って
+   公開の累計カウントを表示します。キーは任意の文字列でOK。 */
+(function(){
+  const KEY = "wx-mdzs_gallery_hits_v1";
+  const url = "https://api.countapi.xyz/hit/" + KEY;
+  fetch(url,{cache:"no-store"})
+    .then(r=>r.json()).then(d=>{
+      const n = (d && (d.value||d.count)) ? (d.value||d.count) : 0;
+      document.getElementById("hit").textContent = String(n).padStart(6,"0");
+    }).catch(_=>{
+      // 失敗時も空欄にならないように
+      document.getElementById("hit").textContent = "000000";
+    });
+})();
+
+/* ========= CSV → ギャラリー描画 ========= */
 const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
 
 async function loadCSV(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error("fetch fail");return parseCSV(await r.text())}
@@ -80,7 +109,7 @@ function parseCSV(t){
 function createCard({icon,name,twitter,work,feedback}){
   const card=document.createElement("div");card.className="card";
 
-  // アイコン（Twitterへ）
+  // アイコン（X/Twitterへ）
   const wrap=document.createElement("div");wrap.className="icon-wrap";card.appendChild(wrap);
   const aTw=document.createElement("a");aTw.href=twitter||"#";aTw.target="_blank";aTw.rel="noopener";
   const img=document.createElement("img");img.className="icon";img.alt=name||"icon";img.src=`./icons/${icon}`;
