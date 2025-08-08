@@ -6,19 +6,21 @@
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto;color:var(--text);background:var(--bg)}
 
-  /* ==== ヒーロー（雲＝背景、ロゴ＝前面img） ==== */
+  /* ==== ヒーロー（雲＝背景＋imgの二重、ロゴ＝img） ==== */
   .hero{max-width:1100px;margin:24px auto 8px;padding:0 16px}
   .hero-box{
     position:relative;
     height:clamp(160px,24vw,300px);
-    background: url("./assets/clouds.png") center/contain no-repeat; /* ← 雲 */
+    background: url("./assets/clouds.png") center/contain no-repeat; /* 背景でも貼る */
+    overflow:visible;
   }
-  .hero-title{
-    position:absolute; inset:0; width:100%; height:100%;
-    object-fit:contain; z-index:1;
+  .hero-clouds, .hero-title{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none;
   }
+  .hero-clouds{ z-index:0; opacity:1; filter:contrast(1.05) brightness(1); }
+  .hero-title { z-index:1; }
 
-  /* ==== 見出し ===== */
+  /* ==== 見出し/説明/カウンタ ==== */
   header{ text-align:center; padding:1rem 1rem .2rem }
   header h1{ margin:0 0 .4rem; font-size:clamp(1.2rem,2.6vw,1.7rem) }
   .lead{ margin:.2rem 0 1.1rem; color:var(--muted) }
@@ -27,7 +29,7 @@
 
   .wrap{max-width:1100px;margin:0 auto;padding:0 1rem 2.4rem}
 
-  /* ==== ギャラリー（4列固定／中央寄せ） ==== */
+  /* ==== ギャラリー（4列固定） ==== */
   .gallery{display:grid;gap:1.5rem;grid-template-columns:repeat(4,180px);justify-content:center}
   .card{width:180px;position:relative;text-align:center;padding:1rem .5rem;border:1px solid var(--ring);border-radius:14px;background:#fff;transition:transform .18s,box-shadow .18s,border-color .18s}
   .card:hover,.card:focus-within{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
@@ -45,7 +47,6 @@
   .pill{display:inline-block;font-size:.85rem;padding:.3rem .6rem;margin:0 .15rem;border-radius:999px;border:1px solid var(--ring);text-decoration:none;color:#2563eb;background:#f8fafc;transition:background .12s,border-color .12s}
   .pill:hover{background:#eef2ff;border-color:#c7d2fe}
 
-  /* スマホは2列に */
   @media (max-width:520px){.gallery{grid-template-columns:repeat(2,160px)}.card{width:160px}}
   @media (prefers-reduced-motion:reduce){.card,.icon{transition:none!important}}
 
@@ -54,10 +55,11 @@
 </style>
 </head><body>
 
-<!-- ★ ヒーロー：雲＝背景、ロゴ＝画像 -->
+<!-- ★ ヒーロー：雲は背景＋img、ロゴはimg -->
 <div class="hero">
   <div class="hero-box">
-    <img class="hero-title" src="./assets/title.jpg" alt="雲隠深情"> <!-- PNGなら .png に -->
+    <img class="hero-clouds" src="./assets/clouds.png" alt="雲の装飾">  <!-- 予備としてimgでも貼る -->
+    <img class="hero-title"  src="./assets/title.jpg"  alt="雲隠深情">  <!-- PNGなら .png に -->
   </div>
 </div>
 
@@ -75,18 +77,17 @@
 <footer>雲隠探情企画 / 主催 はくと</footer>
 
 <script>
-/* ========= 訪問カウンター（CountAPI を利用） =========
-   GitHub Pages はサーバーが無いので、無料の CountAPI を使って
-   公開の累計カウントを表示します。キーは任意の文字列でOK。 */
+/* ========= 訪問カウンター（CountAPI） =========
+   namespace と key を分ける正式URLに修正 */
 (function(){
-  const KEY = "wx-mdzs_gallery_hits_v1";
-  const url = "https://api.countapi.xyz/hit/" + KEY;
+  const NS  = "wx-mdzs";            // 任意の名前空間
+  const KEY = "gallery_hits_v1";    // 任意のキー
+  const url = `https://api.countapi.xyz/hit/${encodeURIComponent(NS)}/${encodeURIComponent(KEY)}`;
   fetch(url,{cache:"no-store"})
     .then(r=>r.json()).then(d=>{
-      const n = (d && (d.value||d.count)) ? (d.value||d.count) : 0;
+      const n = (d && (d.value??d.count)) ?? 0;
       document.getElementById("hit").textContent = String(n).padStart(6,"0");
     }).catch(_=>{
-      // 失敗時も空欄にならないように
       document.getElementById("hit").textContent = "000000";
     });
 })();
