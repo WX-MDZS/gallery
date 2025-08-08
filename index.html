@@ -1,7 +1,40 @@
-/* ===== リセット系（雲の帯が背景に乗らないよう強制） ===== */
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>作品一覧</title>
+<style>
+:root {
+  --accent: rgb(103, 167, 186);
+  --ring: rgba(103, 167, 186, .4);
+}
+
+/* ===== 全体 ===== */
 body {
-  background: none !important;
-  background-image: none !important;
+  font-family: sans-serif;
+  margin: 0;
+  background: #fff;
+}
+
+/* ===== 見出し ===== */
+h1 {
+  font-size: 1.6rem;
+  margin: 1rem;
+}
+.subtitle {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 1rem 1rem;
+}
+
+/* ===== ギャラリー ===== */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  justify-items: center;
+  gap: 1.5rem;
+  padding: 0 1rem 2rem;
 }
 
 /* ===== カード ===== */
@@ -22,21 +55,19 @@ body {
   box-shadow: 0 10px 24px rgba(0,0,0,.08);
 }
 
-/* カード内の雲：薄め＆最背面寄り */
+/* ===== カード内の雲（薄く） ===== */
 .card::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 8px;
+  left: 0; right: 0; bottom: 8px;
   height: 38%;
-  background: url("./assets/clouds.png") center bottom / 140% auto no-repeat;
-  opacity: .22;
+  background: url("./assets/clouds.png") center bottom/140% auto no-repeat;
+  opacity: .22; /* ←ここで薄さ調整 */
   pointer-events: none;
   z-index: 1;
 }
 
-/* アイコン一式（縦長化防止） */
+/* ===== アイコン ===== */
 .icon-wrap {
   position: relative;
   display: inline-block;
@@ -54,21 +85,20 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
   transition: transform .18s, box-shadow .18s, filter .18s;
 }
-.card:hover .icon,
-.card:focus-within .icon {
+.card:hover .icon {
   transform: scale(1.04);
   box-shadow: 0 12px 28px rgba(0,0,0,.12);
   filter: saturate(1.03);
 }
 
-/* ===== ポップアップ（初期状態は非表示） ===== */
+/* ===== ポップアップ ===== */
 .pop {
   position: absolute;
   left: 50%;
   top: calc(100% + 6px);
   transform: translateX(-50%) scale(.98);
   opacity: 0;
-  pointer-events: none; /* 重要 */
+  pointer-events: none;
   background: #fff;
   border: 1px solid var(--ring);
   border-radius: 10px;
@@ -88,7 +118,6 @@ body {
   border-bottom-color: #fff;
   filter: drop-shadow(0 1px 0 var(--ring));
 }
-/* ホバー/フォーカス/タップ時に表示 */
 .card:hover .pop,
 .card:focus-within .pop,
 .card.pop-open .pop {
@@ -110,11 +139,13 @@ body {
   color: #222 !important;
   -webkit-text-stroke: 2px #fff;
   text-shadow:
-    1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff,
-    1px 1px #fff, -1px 1px #fff, 1px -1px #fff, -1px -1px #fff;
+    1px 0 #fff, -1px 0 #fff,
+    0 1px #fff, 0 -1px #fff,
+    1px 1px #fff, -1px 1px #fff,
+    1px -1px #fff, -1px -1px #fff;
 }
 
-/* ===== ボタン色（R103 G167 B186） ===== */
+/* ===== ボタン（リンク） ===== */
 .pill {
   display: inline-block;
   font-size: .85rem;
@@ -133,15 +164,42 @@ body {
   color: var(--accent);
 }
 
-/* ===== スマホ対応 ===== */
-@media (max-width: 520px) {
-  .gallery {
-    grid-template-columns: repeat(2, 160px);
-  }
-  .card {
-    width: 160px;
-  }
-  .icon-wrap {
-    padding-bottom: 20px;
-  }
+/* ===== スマホ ===== */
+@media (max-width:520px) {
+  .gallery { grid-template-columns: repeat(2,160px); }
+  .card { width: 160px; }
+  .icon-wrap { padding-bottom: 20px; }
 }
+</style>
+</head>
+<body>
+
+<h1>作品一覧</h1>
+<p>アイコン＝×、ポップアップのボタン＝作品・感想</p>
+<p class="subtitle">あなたは「000000」人目の姑蘇藍氏の弟子</p>
+
+<div class="gallery">
+  <!-- カード例 -->
+  <div class="card">
+    <div class="icon-wrap">
+      <img class="icon" src="sample1.jpg" alt="">
+    </div>
+    <div class="name">作家名</div>
+    <div class="pop">ポップアップ内容</div>
+    <a class="pill" href="#">作品へ</a>
+    <a class="pill" href="#">感想へ</a>
+  </div>
+
+  <div class="card">
+    <div class="icon-wrap">
+      <img class="icon" src="sample2.jpg" alt="">
+    </div>
+    <div class="name">作家名</div>
+    <div class="pop">ポップアップ内容</div>
+    <a class="pill" href="#">作品へ</a>
+    <a class="pill" href="#">感想へ</a>
+  </div>
+</div>
+
+</body>
+</html>
