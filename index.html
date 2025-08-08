@@ -10,12 +10,12 @@
     --text:#111;
     --muted:#666;
     --ring:#9fd0df;
-    --accent: rgb(103,167,186); /* R103 G167 B186 指定色 */
-    --card-w:160px;   /* カード幅（固定）*/
-    --card-h:190px;   /* カード高さ（固定）*/
-    --icon:100px;     /* アイコン直径 */
-    --gap:28px;       /* カード間のすき間 */
-    --radius:14px;    /* カード角丸 */
+    --accent: rgb(103,167,186);
+    --card-w:160px;
+    --card-h:190px;
+    --icon:100px;
+    --gap:28px;
+    --radius:14px;
   }
 
   *{box-sizing:border-box}
@@ -31,7 +31,6 @@
   .counter{ text-align:center; margin:8px 0 22px; font-weight:700; font-size:clamp(16px,3.6vw,20px)}
   .counter .num{ font-variant-numeric: tabular-nums; letter-spacing:.06em }
 
-  /* 固定サイズのグリッド：PC 4列 / モバイル 2列。横スクロール防止 */
   .gallery{
     display:grid;
     grid-template-columns: repeat(4, var(--card-w));
@@ -43,7 +42,6 @@
     .gallery{ grid-template-columns: repeat(2, var(--card-w)); gap:22px }
   }
 
-  /* ===== カード（固定サイズで縮まない） ===== */
   .card{
     width:var(--card-w);
     height:var(--card-h);
@@ -62,7 +60,6 @@
     box-shadow:0 10px 24px rgba(0,0,0,.08);
   }
 
-  /* アイコン */
   .icon-wrap{ position:relative; display:inline-block; }
   .icon{
     width:var(--icon);
@@ -73,19 +70,18 @@
     background:#f3f4f6;
     filter:drop-shadow(0 0 0 var(--ring));
     border:2px solid #cfe8f2;
+    transition: transform .18s, box-shadow .18s;
   }
   .card:hover .icon,
   .card:focus-within .icon{
     transform:scale(1.04);
-    transition: transform .18s;
     box-shadow:0 12px 28px rgba(0,0,0,.12);
   }
 
-  /* ポップアップ（名前の少し上あたり = 下寄り） */
   .pop{
     position:absolute;
     left:50%;
-    top:62%;                 /* ←位置微調整：もう少し下にしたい時は数値を大きく */
+    top:62%;
     transform:translateX(-50%) scale(.98);
     background:#fff;
     border:1px solid var(--ring);
@@ -103,7 +99,6 @@
   .card:hover .pop,
   .card.pop-open .pop{ opacity:1; transform:translateX(-50%) scale(1); pointer-events:auto }
 
-  /* ボタン（横並び） */
   .pill{
     display:inline-block;
     min-width:46px;
@@ -119,7 +114,6 @@
   }
   .pill:hover{ background: rgba(103,167,186,.15) }
 
-  /* 名前（2行まで／省略） */
   .name{
     position:absolute;
     left:0; right:0;
@@ -133,6 +127,12 @@
     -webkit-box-orient:vertical;
     overflow:hidden;
     text-overflow:ellipsis;
+    color: var(--text);
+    text-decoration: none; /* リンクでも下線なし */
+  }
+  .name a{
+    color: inherit; /* 黒のまま */
+    text-decoration: none;
   }
 
   footer{ text-align:center; color:#777; font-size:.9rem; padding: 16px 0 26px }
@@ -140,29 +140,24 @@
 </head>
 <body>
 <header>
-  <!-- ロゴは大きすぎないようにmax幅で制御 -->
   <img src="assets/title.jpg" alt="雲隠深情">
 </header>
 
 <h1>雲隠深情</h1>
 <h2>作品一覧</h2>
-<p class="desc">アイコン＝X、ポップアップのボタン＝作品・感想</p>
+<p class="desc">アイコン＝影のみ、名前＝Twitter、ポップアップのボタン＝作品・感想</p>
 
-<p class="counter">あなたは<span id="visitor" class="num">000000</span>人目の姑蘇藍氏の先輩</p>
+<p class="counter">あなたは「<span id="visitor" class="num">000000</span>」人目の姑蘇藍氏の先輩</p>
 
 <div id="gallery" class="gallery" aria-live="polite"></div>
 
 <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-/* ===== 設定（CSVのURLだけ必要に応じて差し替え） ===== */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
-
-/* アイコン拡張子の優先順（pngなければjpgを自動フォールバック） */
 const ICON_EXTS = ["png", "jpg", "jpeg", "webp"];
 
-/* ===== カウンター（localStorage） ===== */
 (function(){
   const el = document.getElementById('visitor');
   let n = Number(localStorage.getItem('visitCount') || 0) + 1;
@@ -170,11 +165,8 @@ const ICON_EXTS = ["png", "jpg", "jpeg", "webp"];
   el.textContent = String(n).padStart(6,'0');
 })();
 
-/* ===== CSV 読み込み & 描画 ===== */
 (async function init(){
   const rows = await loadCSV(CSV_URL);
-  // 期待列: A=icon名(拡張子不要/あってもOK), B=名前, C=Xリンク, D=作品, E=感想
-  // 先頭行もデータとして扱う（ヘッダーっぽい文字列は飛ばすロジックを緩め）
   const data = [];
   for(const r of rows){
     if(!r) continue;
@@ -183,25 +175,17 @@ const ICON_EXTS = ["png", "jpg", "jpeg", "webp"];
     const C = (r[2]||"").trim();
     const D = (r[3]||"").trim();
     const E = (r[4]||"").trim();
-    const allEmpty = !A && !B && !C && !D && !E;
-    if(allEmpty) continue;
-
-    // 典型的ヘッダー語を検出したらスキップ（ただし EastBud 等の実データは通す）
+    if(!A && !B && !C && !D && !E) continue;
     const joined = (A+B+C+D+E).toLowerCase();
-    const looksHeader = /icon|アイコン|name|名前|twitter|作品|感想/.test(joined);
-    if(looksHeader) continue;
-
+    if(/icon|アイコン|name|名前|twitter|作品|感想/.test(joined)) continue;
     data.push({icon:A,name:B,x:C,work:D,fb:E});
   }
   render(data);
 })();
 
-/* ===== CSVパーサ（ダブルクオート対応の簡易版） ===== */
 async function loadCSV(url){
   const text = await fetch(url, {cache:"no-store"}).then(r=>r.text());
-  // 改行で分割
   const lines = text.replace(/\r/g,'\n').split('\n').filter(l=>l.trim().length>0);
-  // CSV 1行を「クオート対応」で分割する正規表現
   const splitter = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/g;
   return lines.map(line=>{
     return line.split(splitter).map(cell=>{
@@ -214,7 +198,6 @@ async function loadCSV(url){
   });
 }
 
-/* ===== 描画 ===== */
 function render(items){
   const wrap = document.getElementById('gallery');
   wrap.textContent = '';
@@ -223,14 +206,12 @@ function render(items){
     const card = document.createElement('div');
     card.className = 'card';
 
-    // アイコン画像（拡張子フォールバック）
     const iconWrap = document.createElement('div');
     iconWrap.className = 'icon-wrap';
 
     const img = document.createElement('img');
     img.className = 'icon';
 
-    // sheet には "01" などが入っている想定。拡張子が付いていたら尊重。
     let base = (it.icon || String(idx+1)).trim();
     let explicitExt = '';
     const dot = base.lastIndexOf('.');
@@ -240,7 +221,6 @@ function render(items){
     let srcIdx = 0;
     img.src = `icons/${base}.${sources[srcIdx]}`;
     img.alt = it.name || '';
-
     img.onerror = function(){
       srcIdx++;
       if(srcIdx < sources.length){
@@ -248,19 +228,12 @@ function render(items){
       }
     };
 
-    // アイコンをクリック → X(Twitter) へ
-    if(it.x){
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', ()=> window.open(it.x, '_blank'));
-    }
-
+    // アイコンにはリンクなし（影やホバー効果はCSSで残す）
     iconWrap.appendChild(img);
     card.appendChild(iconWrap);
 
-    // ポップアップ（横並びボタン）
     const pop = document.createElement('div');
     pop.className = 'pop';
-
     if(it.work){
       const a = document.createElement('a');
       a.className = 'pill';
@@ -281,13 +254,21 @@ function render(items){
     }
     card.appendChild(pop);
 
-    // 名前
+    // 名前をリンクに変更（色は黒のまま）
     const name = document.createElement('div');
     name.className = 'name';
-    name.textContent = it.name || '';
+    if(it.x){
+      const link = document.createElement('a');
+      link.href = it.x;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = it.name || '';
+      name.appendChild(link);
+    } else {
+      name.textContent = it.name || '';
+    }
     card.appendChild(name);
 
-    // タッチ端末向け（1タップで開く/外をタップで閉じる）
     card.addEventListener('touchstart', (e)=>{
       if(!card.classList.contains('pop-open')){
         card.classList.add('pop-open');
@@ -298,8 +279,6 @@ function render(items){
     function closeOnOutside(ev){
       if(!card.contains(ev.target)) card.classList.remove('pop-open');
     }
-
-    // キーボードEscで閉じる
     card.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape') card.classList.remove('pop-open');
     });
