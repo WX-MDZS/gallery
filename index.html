@@ -9,9 +9,9 @@
   --accent: rgb(103,167,186);
   --shadow: 0 10px 24px rgba(0,0,0,.08);
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
-  --icon-size: 124px;
-  --card-w: 240px;   /* ←少しだけタイトに */
-  --pad: 14px;       /* カード上パディング（ポップ位置計算に使用） */
+  --icon-size: 120px;
+  --card-w: 232px;   /* カード幅：ややタイト */
+  --gap: 16px;       /* カード間隔（PC） */
 }
 
 /* base */
@@ -23,7 +23,7 @@ body{margin:0;padding:0 0 52px;text-align:center}
 header{padding:22px 10px 8px}
 header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
-/* 見出し群（サイズは前回のまま） */
+/* 見出し */
 .counter{
   margin: 8px auto 6px;
   width:min(920px,92vw);
@@ -33,7 +33,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .counter .num{letter-spacing:.06em}
 .desc{margin: 2px 0 16px; font-size:.95rem; color:#555;}
 .section-title{
-  margin: 20px 0 28px;                 /* ←2行ぶん開けつつ少しだけタイト */
+  margin: 20px 0 28px;
   font-size: clamp(18px, 2.2vw, 24px);
   font-weight:800;
 }
@@ -46,29 +46,42 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 }
 
 /* ===== Grid =====
-   PC=4列固定 / 中=3列 / SP=2列。１列には落ちません。 */
+   PC=4列固定 / 中=3列 / SP=2列。2列を死守するため段階的にカードを縮小し、
+   極端に狭い幅では横スクロール（1列落ちを防止）。 */
 .gallery{
   width:min(1100px,96vw);
   margin:0 auto;
   display:grid;
   grid-template-columns: repeat(4, var(--card-w));  /* PC 4列固定 */
   justify-content:center;
-  gap: 20px;                                       /* 余白を少しタイトに */
+  gap: var(--gap);
+  min-width: calc(var(--card-w) * 2 + var(--gap));  /* 最低2列の幅を確保 */
+  overflow-x:auto;                                   /* 極小幅は横スクロールで維持 */
 }
-@media (max-width:1040px){
-  .gallery{ grid-template-columns: repeat(3, var(--card-w)); } /* タブレット 3列 */
+@media (max-width:1100px){
+  .gallery{ grid-template-columns: repeat(3, var(--card-w)); }
 }
+@media (max-width:860px){
+  .gallery{ grid-template-columns: repeat(2, var(--card-w)); }
+}
+/* 端末が狭いほどカードを段階的に小さくして2列維持 */
 @media (max-width:760px){
-  .gallery{ grid-template-columns: repeat(2, var(--card-w)); } /* スマホ 2列 */
+  :root{ --card-w: 210px; --icon-size: 112px; --gap: 14px; }
+}
+@media (max-width:560px){
+  :root{ --card-w: 192px; --icon-size: 104px; --gap: 12px; }
+}
+@media (max-width:420px){
+  :root{ --card-w: 176px; --icon-size: 96px;  --gap: 12px; }
 }
 
-/* card（サイズ固定 & 余白タイト） */
+/* card（コンパクト化） */
 .card{
   position:relative;
   background:#fff;
   border-radius:16px;
   width: var(--card-w);
-  padding: var(--pad) 8px 12px;
+  padding: 12px 8px 12px;
   box-shadow: var(--shadow);
   transition: box-shadow .2s ease, transform .2s ease;
 }
@@ -78,7 +91,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon-wrap{
   width: var(--icon-size);
   height: var(--icon-size);
-  margin: 0 auto 10px;                 /* 少しタイトに */
+  margin: 2px auto 8px;
   border-radius:50%;
   overflow:hidden;
   border:4px solid rgba(103,167,186,.28);
@@ -92,19 +105,17 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ===== ポップアップ =====
-   アイコンの“下1/3”あたりに少し重なる位置へ。 */
+   アイコンの“下1/3”に軽く重ねる。 */
 .pop{
   display:flex;
-  flex-direction: row !important;      /* 縦並び阻止 */
+  flex-direction: row !important;
   gap:10px;
   justify-content:center;
   align-items:center;
   position:absolute;
   left:50%;
-  /* アイコン下1/3 くらいに重ねる：
-     カード上パディング + アイコンの 0.70 位置に配置して少し沈める */
-  top: calc(var(--pad) + var(--icon-size) * 0.70);
-  transform: translate(-50%, -35%);    /* ←重なり量の微調整 */
+  top: calc(12px + var(--icon-size) * 0.68);  /* 位置ベース */
+  transform: translate(-50%, -30%);           /* 重なり調整 */
   padding:6px 8px;
   border-radius:12px;
   background:#fff;
@@ -116,9 +127,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   transition: opacity .18s ease, transform .18s ease;
 }
 .card:hover .pop,
-.card.pop-open .pop{
-  opacity:1; pointer-events:auto;
-}
+.card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
 /* ボタン（太字） */
 .pill{
@@ -132,7 +141,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   background:#fff;
   text-decoration:none;
   font-size:.95rem;
-  font-weight:700;                     /* 太文字 */
+  font-weight:700;                   /* 太文字 */
   white-space:nowrap;
   box-shadow:0 2px 0 rgba(103,167,186,.08);
   transition:background .12s, transform .06s;
@@ -140,13 +149,13 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .pill:hover{ background:rgba(103,167,186,.12) }
 .pill:active{ transform:translateY(1px) }
 
-/* 名前：余白を少し詰める（ポップが重なっても読みやすく） */
-.name{ margin: 34px 0 2px; font-weight:700; font-size:1.02rem; }
+/* 名前（さらにタイト） */
+.name{ margin: 28px 0 2px; font-weight:700; font-size:1.02rem; }
 .name a{ color:#111; text-decoration:none; }
 .name a:focus-visible{ outline:2px solid var(--accent) }
 
 /* footer */
-footer{margin:26px 0 0; color:#666; font-size:.9rem}
+footer{margin:24px 0 0; color:#666; font-size:.9rem}
 </style>
 </head>
 <body>
@@ -169,7 +178,7 @@ footer{margin:26px 0 0; color:#666; font-size:.9rem}
 <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-/* ===== 設定（CSV 公開リンク） ===== */
+/* ===== CSV ===== */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
@@ -189,13 +198,10 @@ async function loadCSV(url){
   const text = await res.text();
   const lines = text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
   if(lines.length===0) return [];
-
   const rawHeader = lines[0].split(',').map(s=>s.trim());
   const expected = ["アイコン","名前","ツイッター","作品","感想"];
-
   let header = rawHeader;
   let headerOK = expected.every((h,i)=>rawHeader[i]===h);
-
   if(!headerOK){
     const joined = rawHeader.join('/');
     if(joined !== expected.join('/')){
@@ -206,7 +212,6 @@ async function loadCSV(url){
         "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
     }
   }
-
   return lines.slice(1).map(line=>{
     const cols = line.split(',').map(s=>s.trim());
     const obj = {};
