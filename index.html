@@ -9,53 +9,75 @@
   --accent: rgb(103,167,186);
   --shadow: 0 10px 24px rgba(0,0,0,.08);
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
-  --icon-size: 108px;
-  --card-w: 200px;
-  --gap-x: 14px;
-  --gap-y: 12px;
+  --icon-size: 108px;   /* PCのアイコン径 */
+  --card-w: 200px;      /* PCのカード幅（4列固定） */
+  --gap-x: 14px;        /* 列間 */
+  --gap-y: 14px;        /* 行間 */
 }
 
+/* base */
 *{box-sizing:border-box}
-html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif}
+html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Sans",Meiryo,sans-serif}
 body{margin:0;padding:0 0 52px;text-align:center}
 
+/* header */
 header{padding:22px 10px 8px}
 header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
+/* 見出し・説明 */
 .counter{
-  margin: 8px auto 6px;
+  margin: 8px auto 4px;
   width:min(920px,92vw);
   font-weight:900;
   font-size: clamp(22px, 3.0vw, 32px);
 }
 .counter .num{letter-spacing:.06em}
-.desc{margin: 2px 0 8px; font-size:.95rem; color:#555;}
+.desc{margin: 2px 0; font-size:.95rem; color:#555;}
+.desc + .desc{margin-top:4px}
 .section-title{
-  margin: 20px 0 28px;
+  margin: 18px 0 26px;
   font-size: clamp(18px, 2.2vw, 24px);
   font-weight:800;
 }
 
+/* 注意表示 */
 .notice{
   background:#fff9e6;border:1px solid #f2e2b6;color:#7a5a00;
   width:min(1000px,92vw);margin:0 auto 16px;padding:12px 14px;
   border-radius:12px;text-align:left;
 }
 
+/* ===== Grid =====
+   PC=4列固定 / タブレット=3列 / スマホ=2列（横スクロール禁止＆ズレなし） */
 .gallery{
-  width:min(1100px,96vw);
+  width:min(1100px, 100%);
   margin:0 auto;
   display:grid;
-  grid-template-columns: repeat(4, var(--card-w));
+  grid-template-columns: repeat(4, var(--card-w)); /* PCは4列固定 */
   justify-content:center;
   column-gap: var(--gap-x);
   row-gap: var(--gap-y);
-  min-width: calc(var(--card-w) * 4 + var(--gap-x) * 3);
 }
+@media (max-width:1100px){
+  .gallery{ grid-template-columns: repeat(3, var(--card-w)); }
+}
+/* スマホは割合カラムで2列固定。カードは幅auto＝列幅100% */
 @media (max-width:860px){
-  .gallery{ grid-template-columns: repeat(2, var(--card-w)); }
+  .gallery{
+    width:100%;
+    padding: 0 16px;                      /* 画面端の余白 */
+    grid-template-columns: repeat(2, 1fr);/* 2列の割合 */
+    column-gap: 12px;
+    row-gap: 12px;
+  }
+  .card{ width:auto; }                    /* 列幅いっぱい */
+  :root{ --icon-size: 102px; }            /* 見た目バランス */
+}
+@media (max-width:420px){
+  :root{ --icon-size: 96px; }
 }
 
+/* card */
 .card{
   position:relative;
   background:#fff;
@@ -67,6 +89,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 }
 .card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
 
+/* icon */
 .icon-wrap{
   width: var(--icon-size);
   height: var(--icon-size);
@@ -83,15 +106,17 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon-wrap:hover{ filter: saturate(1.04) }
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
+/* ===== ポップアップ =====
+   画像の“下1/3”あたりに重ねる（カード座標基準なのでズレない） */
+.card{ --popY: calc(10px + var(--icon-size) * 0.68); }
 .pop{
   display:flex;
-  flex-direction: row !important;
   gap:10px;
   justify-content:center;
   align-items:center;
   position:absolute;
   left:50%;
-  top: calc(var(--icon-size) * 0.68);
+  top: var(--popY);
   transform: translate(-50%, -30%);
   padding:6px 8px;
   border-radius:12px;
@@ -106,6 +131,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .card:hover .pop,
 .card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
+/* ボタン（太字・色統一） */
 .pill{
   display:inline-block;
   min-width:62px;
@@ -125,6 +151,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .pill:hover{ background:rgba(103,167,186,.12) }
 .pill:active{ transform:translateY(1px) }
 
+/* 名前（アイコンに近づけ） */
 .name{
   margin: 18px 0 2px;
   font-weight:700;
@@ -133,6 +160,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .name a{ color:#111; text-decoration:none; }
 .name a:focus-visible{ outline:2px solid var(--accent) }
 
+/* footer */
 footer{margin:22px 0 0; color:#666; font-size:.9rem}
 </style>
 </head>
@@ -146,8 +174,9 @@ footer{margin:22px 0 0; color:#666; font-size:.9rem}
   あなたは<strong class="num" id="visitor">000000</strong>人目の姑蘇藍氏の先輩
 </p>
 <p class="desc">お名前＝X、ポップアップのボタン＝作品・感想</p>
-<p class="desc">よければ各作家さんに感想をお願いします。</p>
-<p class="section-title">作品一覧</p>
+<p class="desc">良ければ各作家さんに感想をお願いします。</p>
+
+<h1 class="section-title">作品一覧</h1>
 
 <p id="notice" class="notice" style="display:none"></p>
 
@@ -160,28 +189,27 @@ footer{margin:22px 0 0; color:#666; font-size:.9rem}
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
-/* ===== 共通カウンター (GAS) ===== */
-(async () => {
-  const el = document.getElementById('visitor');
-  const GAS_URL = 'https://script.google.com/macros/s/XXXXXXXXXXXX/exec'; // ← デプロイURLに置き換え
-
-  try {
-    const keyDate = 'mdzs_srv_last_date';
-    const keyCache = 'mdzs_srv_last_count';
-    const today = new Date().toDateString();
-
-    if (localStorage.getItem(keyDate) !== today) {
-      const res = await fetch(GAS_URL, { cache: 'no-store' });
-      const data = await res.json();
-      const countStr = String(data.count).padStart(6,'0');
-      localStorage.setItem(keyDate, today);
-      localStorage.setItem(keyCache, countStr);
-      el.textContent = countStr;
-    } else {
-      el.textContent = localStorage.getItem(keyCache) || '000000';
+/* ===== 訪問カウンター（DOM準備後に必ず更新） ===== */
+(function(){
+  const update = () => {
+    const el = document.getElementById('visitor');
+    if(!el) return;
+    try{
+      const key = 'mdzs_counter_v2';
+      let n = Number(localStorage.getItem(key) || 0);
+      if (!Number.isFinite(n)) n = 0;
+      n += 1;
+      localStorage.setItem(key, String(n));
+      el.textContent = String(n).padStart(6,'0');
+    }catch(_){
+      // 例外時は000001表示だけ行う
+      el.textContent = '000001';
     }
-  } catch (e) {
-    el.textContent = localStorage.getItem('mdzs_srv_last_count') || '000000';
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', update, {once:true});
+  } else {
+    update();
   }
 })();
 
@@ -196,9 +224,14 @@ async function loadCSV(url){
   let header = rawHeader;
   let headerOK = expected.every((h,i)=>rawHeader[i]===h);
   if(!headerOK){
-    const n = document.getElementById('notice');
-    n.style.display = 'block';
-    n.textContent = "CSVの見出しが判定できなかったため、推測して読み込みました。";
+    const joined = rawHeader.join('/');
+    if(joined !== expected.join('/')){
+      header = expected;
+      const n = document.getElementById('notice');
+      n.style.display = 'block';
+      n.textContent =
+        "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
+    }
   }
   const rows = lines.slice(1).map(line=>{
     const cols = line.split(',').map(s=>s.trim());
@@ -254,6 +287,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   name.appendChild(tw);
   card.appendChild(name);
 
+  /* モバイル：タップで開閉（外側タップで閉じる） */
   iconWrap.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -284,10 +318,9 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
     console.error(err);
     const n = document.getElementById('notice');
     n.style.display = 'block';
-    n.textContent = 'CSVの読み込みに失敗しました。';
+    n.textContent = 'CSVの読み込みに失敗しました。時間をおいて再読み込みしてください。';
   }
 })();
 </script>
 </body>
 </html>
-
