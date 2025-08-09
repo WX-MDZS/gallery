@@ -9,310 +9,176 @@
     --accent: rgb(103,167,186);
     --shadow: 0 10px 24px rgba(0,0,0,.08);
     --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
-    --card-size: 240px; /* PCの1カード外寸(ほぼ正方形) */
+    --card-size: 240px;
     --icon-size: 120px;
   }
-
   *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; background:#fff; color:#222; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", "YuGothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; }
-
+  html,body{ margin:0; padding:0; background:#fff; color:#222; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif; }
   header{ padding: 28px 0 8px; text-align:center; }
   header img{ width:min(920px,90vw); height:auto; display:block; margin:0 auto; }
-
   main{ width:min(1100px, 94vw); margin: 0 auto 64px; }
-
-  h1{
-    text-align:center;
-    font-size: clamp(22px, 3.2vw, 32px);
-    margin: 8px 0 6px;
-  }
-
-  .desc, .counter{
-    text-align:center;
-    color:#555;
-    margin: 6px 0;
-  }
+  h1{ text-align:center; font-size: clamp(22px, 3.2vw, 32px); margin: 8px 0 6px; }
+  .desc, .counter{ text-align:center; color:#555; margin: 6px 0; }
   .counter strong{ color:#000; }
-
-  /* ============ グリッド ============ */
-  .gallery{
-    margin-top: 22px;
-    display:grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 22px;
+  .notice, .alert{
+    margin: 16px auto 0; width:min(900px,92vw); padding:12px 14px; border-radius:12px;
   }
-  @media (max-width: 960px){
-    :root{ --card-size: 216px; --icon-size: 110px; }
-    .gallery{ grid-template-columns: repeat(3, minmax(0, 1fr)); gap:18px; }
-  }
-  @media (max-width: 620px){
-    :root{ --card-size: 200px; --icon-size: 106px; }
-    .gallery{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap:16px; }
-  }
-
-  /* ============ カード ============ */
+  .notice{ background:#fff9e6; border:1px solid #f2e2b6; color:#7a5a00; display:none; }
+  .alert{ background:#fff2f2; border:1px solid #f2cccc; color:#a33; display:none; }
+  .gallery{ margin-top:22px; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:22px; }
+  @media (max-width:960px){ :root{ --card-size:216px; --icon-size:110px; } .gallery{ grid-template-columns: repeat(3,1fr); gap:18px; } }
+  @media (max-width:620px){ :root{ --card-size:200px; --icon-size:106px; } .gallery{ grid-template-columns: repeat(2,1fr); gap:16px; } }
   .card{
-    position:relative;
-    width:100%;
-    min-height: var(--card-size);
-    background:#fff;
-    border-radius:18px;
-    box-shadow: var(--shadow);
-    transition: box-shadow .18s ease, transform .18s ease;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding: 16px 12px;
+    position:relative; width:100%; min-height:var(--card-size);
+    background:#fff; border-radius:18px; box-shadow:var(--shadow);
+    transition: box-shadow .18s, transform .18s; display:flex; flex-direction:column; align-items:center; padding:16px 12px;
   }
-  .card:hover{ box-shadow: var(--shadow-hover); }
-
-  .icon-wrap{
-    position:relative;
-    width: var(--icon-size);
-    height: var(--icon-size);
-    margin: 4px 0 14px;
-    border-radius: 999px;
-    display:grid;
-    place-items:center;
-    transition: transform .18s ease;
-  }
+  .card:hover{ box-shadow:var(--shadow-hover); }
+  .icon-wrap{ position:relative; width:var(--icon-size); height:var(--icon-size); margin:4px 0 14px; border-radius:999px; display:grid; place-items:center; transition:transform .18s; }
   .card:hover .icon-wrap{ transform: translateY(-1px); }
-  .icon{
-    width:100%; height:100%; object-fit:cover; border-radius:999px;
-    border: 4px solid rgba(103,167,186,.25);
-    box-shadow: 0 6px 18px rgba(0,0,0,.06);
-    display:block;
-    background:#f7f9fb;
-  }
-
-  /* ============ ポップ(ボタン) ============ */
-  .pop{
-    position:absolute;
-    left:50%;
-    transform: translateX(-50%);
-    top: calc(16px + var(--icon-size) + 4px); /* アイコンのすぐ下 */
-    display:flex; gap:.6rem;
-    z-index: 10;
-  }
+  .icon{ width:100%; height:100%; object-fit:cover; border-radius:999px; border:4px solid rgba(103,167,186,.25); box-shadow:0 6px 18px rgba(0,0,0,.06); background:#f7f9fb; }
+  .pop{ position:absolute; left:50%; transform:translateX(-50%); top: calc(16px + var(--icon-size) + 4px); display:flex; gap:.6rem; z-index:10; }
   .pill{
-    display:inline-block;
-    font-size: .92rem;
-    padding: .4rem .9rem;
-    border-radius: 999px;
-    border:1px solid var(--accent);
-    background: #fff;
-    color: var(--accent);
-    text-decoration:none;
-    box-shadow: 0 4px 14px rgba(103,167,186,.12);
-    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-    user-select:none;
+    display:inline-block; font-size:.92rem; padding:.4rem .9rem; border-radius:999px; border:1px solid var(--accent);
+    background:#fff; color:var(--accent); text-decoration:none; box-shadow:0 4px 14px rgba(103,167,186,.12);
+    transition: transform .12s, box-shadow .12s, background .12s;
   }
-  .pill:hover{
-    background: rgba(103,167,186,.10);
-    box-shadow: 0 6px 18px rgba(103,167,186,.18);
-    transform: translateY(-1px);
-  }
-
-  /* ============ 名前 ============ */
-  .name{
-    margin-top: calc(14px + 36px); /* ボタン分の余白を足して下げる */
-    font-weight: 700;
-    text-align:center;
-    line-height:1.25;
-    min-height: 1.25em;
-  }
-  .name a{
-    color:#111; text-decoration:none;
-  }
-  .name a:focus-visible{
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-radius: 6px;
-  }
-
-  /* ============ アラート ============ */
-  .alert{
-    margin: 20px auto 0;
-    width: min(900px, 92vw);
-    background: #fff2f2;
-    border:1px solid #f2cccc;
-    color:#a33;
-    padding: 12px 14px;
-    border-radius: 12px;
-  }
+  .pill:hover{ background:rgba(103,167,186,.10); box-shadow:0 6px 18px rgba(103,167,186,.18); transform:translateY(-1px); }
+  .name{ margin-top: calc(14px + 36px); font-weight:700; text-align:center; line-height:1.25; min-height:1.25em; }
+  .name a{ color:#111; text-decoration:none; }
+  .name a:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
 </style>
 </head>
 <body>
-  <header>
-    <img src="./assets/title.jpg" alt="雲隠深情">
-  </header>
-
+  <header><img src="./assets/title.jpg" alt="雲隠深情"></header>
   <main>
-    <h1>作品一覧</h1>
-    <p class="desc">アイコン＝Twitter、ポップアップのボタン＝作品・感想</p>
     <p class="counter">あなたは「<strong id="counter">000000</strong>」人目の姑蘇藍氏の弟子</p>
+    <p class="desc">アイコン＝Twitter、ポップアップのボタン＝作品・感想</p>
+    <h1>作品一覧</h1>
 
-    <div id="alert" class="alert" style="display:none"></div>
+    <div id="notice" class="notice"></div>
+    <div id="alert" class="alert"></div>
+
     <section id="gallery" class="gallery" aria-live="polite"></section>
     <p class="desc" style="margin-top:32px;">雲隠探情企画 / 主催はくと</p>
   </main>
 
 <script>
-/* =====================  設 定  ===================== */
-// 公開CSVの「ウェブに公開」→ カンマ区切り（.csv）のURLを入れてください
+/*** 設定 ***/
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
+function iconPath(v){ let s=(v||"").trim(); if(!s) return ""; if(!/\.(png|jpg|jpeg|webp|gif)$/i.test(s)) s+=".png"; return `./icons/${s}`; }
 
-// 画像は ./icons/ フォルダ。CSVの値が 01 なら 01.png を自動で補完します。
-function iconPath(iconCell){
-  let f = (iconCell || "").trim();
-  if(!f) return "";
-  if(!/\.(png|jpg|jpeg|webp|gif)$/i.test(f)) f += ".png";
-  return `./icons/${f}`;
-}
-
-/* ========== ユーティリティ（見出しの別名を許容） ========== */
-const norm = s => (s||"").toString().replace(/\s+/g,"").replace(/\u3000/g,"").toLowerCase();
-const HEADER_ALIASES = {
-  name:     ["名前","name"],
-  icon:     ["アイコン","icon","画像"],
-  x:        ["x","twitter","ツイッター","twitterid"],
-  work:     ["作品","作品url","work"],
-  feedback: ["感想","感想フォーム","feedback","form"]
+/*** ヘッダゆるゆる判定 + フォールバック ***/
+const norm = s => (s||"").toString().replace(/^\uFEFF/,"").replace(/\r/g,"").replace(/\s+/g,"").replace(/\u3000/g,"").toLowerCase();
+const matchers = {
+  icon: (h)=> /アイコン|icon|画像/.test(h),
+  name: (h)=> /名前|name/.test(h),
+  x:    (h)=> /(^|[^a-z])x([^a-z]|$)|twitter|ツイッター/.test(h),
+  work: (h)=> /作品|work|url/.test(h),
+  fb:   (h)=> /感想|フォーム|feedback|form/.test(h),
 };
-function findIndex(headerRow, keys){
-  const H = headerRow.map(norm);
-  for(const k of keys.map(norm)){
-    const i = H.indexOf(k);
-    if(i !== -1) return i;
-  }
-  return -1;
-}
 
-/* =====================  CSVを読む  ===================== */
 async function loadCSV(url){
-  const res = await fetch(url, {cache:"no-store"});
-  const text = await res.text();
+  const res = await fetch(url, {cache:'no-store'});
+  const raw = await res.text();
 
-  const rows = text.replace(/\r/g,"").split("\n")
-                   .map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/) // CSVのカンマをざっくり
-                               .map(c => c.replace(/^"|"$/g,"")));
-  // 空行除外
-  const clean = rows.filter(r => r && r.some(c => String(c).trim()!==""));
-  if(clean.length < 2) throw new Error("CSVにデータ行がありません。");
+  // 簡易CSV分割（引用対応）
+  const rows = raw.replace(/\r/g,"").split("\n")
+    .map(line => {
+      const out=[]; let cur=""; let q=false;
+      for(let i=0;i<line.length;i++){
+        const c=line[i];
+        if(c === '"'){
+          if(q && line[i+1]==='"'){ cur+='"'; i++; }
+          else q=!q;
+        }else if(c === ',' && !q){ out.push(cur); cur=""; }
+        else cur+=c;
+      }
+      out.push(cur);
+      return out.map(s=>s.replace(/^"|"$/g,""));
+    })
+    .filter(r => r && r.some(c => String(c).trim()!==""));
 
-  const header = clean[0];
-  const idx = {
-    name:     findIndex(header, HEADER_ALIASES.name),
-    icon:     findIndex(header, HEADER_ALIASES.icon),
-    x:        findIndex(header, HEADER_ALIASES.x),
-    work:     findIndex(header, HEADER_ALIASES.work),
-    feedback: findIndex(header, HEADER_ALIASES.feedback)
-  };
-  const missing = Object.entries(idx).filter(([,v])=>v===-1).map(([k])=>k);
-  if(missing.length){
-    const msg = "CSVは読み取れましたが、見出しの列名が一致せずデータを解釈できませんでした。"
-              + "許容される見出し例：名前 / アイコン / 作品 / 感想 / X（順不同・全角空白OK）。"
-              + "不足: " + missing.join(", ");
-    throw new Error(msg);
+  if(rows.length<2) throw new Error("CSVにデータ行がありません。");
+
+  const header = rows[0].map(h => norm(h));
+  const idx = {icon:-1,name:-1,x:-1,work:-1,fb:-1};
+
+  header.forEach((h,i)=>{
+    if(idx.icon===-1 && matchers.icon(h)) idx.icon=i;
+    else if(idx.name===-1 && matchers.name(h)) idx.name=i;
+    else if(idx.x===-1 && matchers.x(h))       idx.x=i;
+    else if(idx.work===-1 && matchers.work(h)) idx.work=i;
+    else if(idx.fb===-1 && matchers.fb(h))     idx.fb=i;
+  });
+
+  let usedFallback=false;
+  if(Object.values(idx).some(v=>v===-1)){
+    // フォールバック：先頭から5列を [icon, name, x, work, fb] とみなす
+    idx.icon = 0;
+    idx.name = 1;
+    idx.x    = 2;
+    idx.work = 3;
+    idx.fb   = 4;
+    usedFallback = true;
   }
 
-  return clean.slice(1).map(r => ({
-    name: r[idx.name]?.trim() || "",
-    icon: r[idx.icon]?.trim() || "",
-    x:    r[idx.x]?.trim() || "",
-    work: r[idx.work]?.trim() || "",
-    fb:   r[idx.feedback]?.trim() || ""
-  })).filter(o => o.name || o.icon || o.x || o.work || o.fb);
+  const data = rows.slice(1).map(r=>({
+    icon: r[idx.icon] ?? "",
+    name: r[idx.name] ?? "",
+    x:    r[idx.x]    ?? "",
+    work: r[idx.work] ?? "",
+    fb:   r[idx.fb]   ?? "",
+  })).filter(o => o.icon || o.name || o.x || o.work || o.fb);
+
+  return {data, usedFallback};
 }
 
-/* =====================  カード生成  ===================== */
-function makeCard(row){
-  const {name, icon, x, work, fb} = row;
+/*** カード生成 ***/
+function makeCard({name,icon,x,work,fb}){
+  const el=document.createElement("article"); el.className="card";
 
-  const card = document.createElement("article");
-  card.className = "card";
+  const wrap=document.createElement("div"); wrap.className="icon-wrap";
+  const img=document.createElement("img"); img.className="icon";
+  img.alt = (name||"アイコン"); img.decoding="async"; img.loading="lazy"; img.src=iconPath(icon);
+  img.onerror = ()=>{ img.style.visibility="hidden"; };
+  wrap.appendChild(img); el.appendChild(wrap);
 
-  // アイコン（リンクなし）
-  const wrap = document.createElement("div");
-  wrap.className = "icon-wrap";
-  const img = document.createElement("img");
-  img.className = "icon";
-  img.alt = `${name || "アイコン"}`;
-  img.decoding = "async";
-  img.loading = "lazy";
-  img.src = iconPath(icon);
-  img.onerror = () => { img.style.visibility="hidden"; }; // 画像が無い場合は消す
-  wrap.appendChild(img);
-  card.appendChild(wrap);
+  const pop=document.createElement("div"); pop.className="pop";
+  const a1=document.createElement("a"); a1.className="pill"; a1.textContent="作品"; a1.href=work||"#"; a1.target="_blank"; a1.rel="noopener";
+  const a2=document.createElement("a"); a2.className="pill"; a2.textContent="感想"; a2.href=fb||"#"; a2.target="_blank"; a2.rel="noopener";
+  pop.append(a1,a2); el.appendChild(pop);
 
-  // ボタン（横並び）
-  const pop = document.createElement("div");
-  pop.className = "pop";
-  const toWork = document.createElement("a");
-  toWork.className = "pill";
-  toWork.textContent = "作品";
-  toWork.href = work || "#";
-  toWork.target = "_blank";
-  toWork.rel = "noopener";
-  const toFb = document.createElement("a");
-  toFb.className = "pill";
-  toFb.textContent = "感想";
-  toFb.href = fb || "#";
-  toFb.target = "_blank";
-  toFb.rel = "noopener";
-  pop.append(toWork, toFb);
-  card.appendChild(pop);
+  const nm=document.createElement("div"); nm.className="name";
+  if(x){ const a=document.createElement("a"); a.href=x; a.target="_blank"; a.rel="noopener"; a.textContent=name||"(無題)"; nm.appendChild(a); }
+  else nm.textContent = name || "(無題)";
+  el.appendChild(nm);
 
-  // 名前（黒リンクでXへ。URLがなければテキスト）
-  const nameEl = document.createElement("div");
-  nameEl.className = "name";
-  if(x){
-    const a = document.createElement("a");
-    a.href = x; a.target="_blank"; a.rel="noopener";
-    a.textContent = name || "(無題)";
-    nameEl.appendChild(a);
-  }else{
-    nameEl.textContent = name || "(無題)";
-  }
-  card.appendChild(nameEl);
-
-  // スマホでの誤タップ対策：アイコンにリンクは無し（影だけ）
-  // 既にリンクが無い設計なので処理は不要。ただし軽いタップ効果だけ。
-  wrap.addEventListener("pointerdown", ()=> wrap.style.transform="translateY(-2px)");
-  wrap.addEventListener("pointerup",   ()=> wrap.style.transform="");
-
-  return card;
+  wrap.addEventListener("pointerdown",()=>wrap.style.transform="translateY(-2px)");
+  wrap.addEventListener("pointerup",  ()=>wrap.style.transform="");
+  return el;
 }
 
-/* =====================  カウンター  ===================== */
-(function counter(){
-  try{
-    const el = document.getElementById("counter");
-    let v = +localStorage.getItem("visitCount_mdzz_gallery") || 0;
-    v++;
-    localStorage.setItem("visitCount_mdzz_gallery", String(v));
-    el.textContent = String(v).padStart(6,"0");
-  }catch(_){}
+/*** カウンター ***/
+(function(){
+  try{ const el=document.getElementById("counter"); let v=+localStorage.getItem("visitCount_mdzz_gallery")||0; v++; localStorage.setItem("visitCount_mdzz_gallery",String(v)); el.textContent=String(v).padStart(6,"0"); }catch(_){}
 })();
 
-/* =====================  実行  ===================== */
-(async function init(){
-  const alertBox = document.getElementById("alert");
+/*** 実行 ***/
+(async ()=>{
+  const alertBox=document.getElementById("alert");
+  const notice=document.getElementById("notice");
+  const grid=document.getElementById("gallery");
   try{
-    const rows = await loadCSV(CSV_URL);
-    const gallery = document.getElementById("gallery");
-    if(!rows.length){
-      alertBox.style.display="block";
-      alertBox.textContent = "CSVに表示できる行がありませんでした。";
-      return;
+    const {data, usedFallback} = await loadCSV(CSV_URL);
+    if(usedFallback){
+      notice.style.display="block";
+      notice.textContent="CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
     }
-    // 32人など順のまま並べる
-    for(const row of rows){
-      gallery.appendChild(makeCard(row));
-    }
-  }catch(err){
+    data.forEach(row => grid.appendChild(makeCard(row)));
+  }catch(e){
     alertBox.style.display="block";
-    alertBox.textContent = err.message || String(err);
+    alertBox.textContent = e.message || String(e);
   }
 })();
 </script>
