@@ -1,19 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>雲隠深情 | 作品一覧</title>
 <style>
 :root{
   --accent: rgb(103,167,186);
-  --shadow: 0 10px 24px rgba(0,0,0,.08);
-  --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
+  --shadow: 0 12px 32px rgba(0,0,0,.08);         /* 影を広め柔らかく */
+  --shadow-hover: 0 20px 44px rgba(0,0,0,.14);   /* ホバー時ふわっと */
   --icon-size: 108px;
 
-  /* 赤い余白削減後の設定 */
-  --card-w: 200px;
-  --gap: 16px;
+  /* 赤い余白を削る：カード幅を細く、間隔も狭く */
+  --card-w: 200px;        /* 220 → 200 */
+  --gap: 16px;            /* 20 → 16 */
 }
 
 /* base */
 *{box-sizing:border-box}
-html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Sans",Meiryo,sans-serif}
-body{margin:0;padding:0 0 56px;text-align:center}
+html,body{
+  background:#fff;color:#222;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Sans",Meiryo,sans-serif;
+}
+body{
+  margin:0;
+  padding:0 0 80px; /* 下余白を増やして影が切れないように */
+  text-align:center
+}
 
 /* header */
 header{padding:22px 10px 8px}
@@ -41,10 +54,11 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
 /* ===== Grid ===== */
 .wrap{
-  --wrap-w: calc(var(--card-w)*4 + var(--gap)*3 + 40px); /* 左右余白分加算 */
-  width: min(var(--wrap-w), 100vw);
+  --wrap-w: calc(var(--card-w)*4 + var(--gap)*3);
+  width: var(--wrap-w);
+  max-width: 100vw;
   margin: 0 auto;
-  padding: 0 20px 20px;  /* 左右20px + 下20px */
+  padding: 0 24px; /* 左右余白を足して影が切れないように */
   overflow-x: auto;
 }
 .gallery{
@@ -54,9 +68,9 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   padding-bottom: 4px;
 }
 
-/* スマホのみ 2列 */
+/* スマホのみ2列 */
 @media (max-width: 860px) and (pointer: coarse){
-  .wrap{ width: min(480px, 96vw); overflow-x: hidden; padding:0; }
+  .wrap{ width: min(480px, 96vw); padding: 0; overflow-x: hidden; }
   .gallery{ grid-template-columns: repeat(2, 1fr); gap: 16px; }
   :root{ --icon-size: 104px; }
 }
@@ -93,7 +107,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon-wrap:hover{ filter: saturate(1.04) }
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
-/* pop */
+/* ポップアップ */
 .pop{
   display:flex; gap:10px; justify-content:center; align-items:center;
   position:absolute; left:50%;
@@ -107,7 +121,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .card:hover .pop,
 .card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
-/* pill */
+/* ボタン */
 .pill{
   display:inline-block; min-width:62px; padding:.36rem .66rem;
   border-radius:999px; line-height:1; border:1px solid var(--accent);
@@ -119,7 +133,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .pill:hover{ background:rgba(103,167,186,.12) }
 .pill:active{ transform:translateY(1px) }
 
-/* name */
+/* 名前 */
 .name{ margin: 18px 0 4px; font-weight:700; font-size:1.00rem; }
 .name a{ color:#111; text-decoration:none; }
 .name a:focus-visible{ outline:2px solid var(--accent) }
@@ -127,3 +141,113 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 /* footer */
 footer{margin:22px 0 0; color:#666; font-size:.9rem}
 </style>
+</head>
+<body>
+
+<header>
+  <img src="./assets/title.jpg" alt="雲隠深情">
+</header>
+
+<p class="counter">
+  あなたは <strong class="num" id="visitor">000000</strong> 人目の姑蘇藍氏の先輩
+</p>
+<p class="lead">お名前＝X、ポップアップのボタン＝作品・感想</p>
+<p class="lead">良ければ各作家さんに感想をお願いします。</p>
+
+<h1 class="section-title">作品一覧</h1>
+
+<p id="notice" class="notice"></p>
+
+<div class="wrap"><section id="gallery" class="gallery" aria-live="polite"></section></div>
+
+<footer>雲隠探情企画 / 主催はくと</footer>
+
+<script>
+const CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
+const COUNTER_FIXED = '000078';
+
+async function loadCSV(url){
+  const res = await fetch(url, {cache:'no-store'});
+  const text = await res.text();
+  const lines = text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
+  if(!lines.length) return [];
+
+  const expected = ["アイコン","名前","ツイッター","作品","感想"];
+  const rawHeader = lines[0].split(',').map(s=>s.trim());
+  let header = rawHeader;
+  if (rawHeader.join('/') !== expected.join('/')) {
+    header = expected;
+    const n = document.getElementById('notice');
+    n.style.display = 'block';
+    n.textContent = "CSVの見出しが判定できなかったため、列の並びで推測して読み込みました。";
+  }
+  return lines.slice(1).map(line=>{
+    const cols = line.split(',').map(s=>s.trim());
+    const obj = {};
+    header.forEach((h,i)=> obj[h] = (cols[i]||"").trim());
+    return obj;
+  });
+}
+
+function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const iconWrap = document.createElement('div');
+  iconWrap.className = 'icon-wrap';
+  const img = document.createElement('img');
+  img.className = 'icon';
+  img.alt = `${名前} のアイコン`;
+  img.src = `./icons/${アイコン}`;
+  iconWrap.appendChild(img);
+  card.appendChild(iconWrap);
+
+  const pop = document.createElement('div');
+  pop.className = 'pop';
+  const a1 = document.createElement('a');
+  a1.className = 'pill'; a1.href = 作品 || '#'; a1.target = '_blank'; a1.rel = 'noopener'; a1.textContent = '作品';
+  const a2 = document.createElement('a');
+  a2.className = 'pill'; a2.href = 感想 || '#'; a2.target = '_blank'; a2.rel = 'noopener'; a2.textContent = '感想';
+  pop.appendChild(a1); pop.appendChild(a2);
+  card.appendChild(pop);
+
+  const name = document.createElement('div');
+  name.className = 'name';
+  const tw = document.createElement('a');
+  tw.href = ツイッター || '#'; tw.target = '_blank'; tw.rel = 'noopener'; tw.textContent = 名前 || '';
+  name.appendChild(tw);
+  card.appendChild(name);
+
+  iconWrap.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); card.classList.toggle('pop-open'); });
+  iconWrap.tabIndex = 0;
+  iconWrap.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); card.classList.toggle('pop-open'); }});
+  document.addEventListener('click', (e)=>{ if(!card.contains(e.target)) card.classList.remove('pop-open'); });
+
+  return card;
+}
+
+(async ()=>{
+  try{
+    const rows = await loadCSV(CSV_URL);
+    const gallery = document.getElementById('gallery');
+    gallery.innerHTML = '';
+    rows.slice(0,32).forEach(r => gallery.appendChild(makeCard(r)));
+
+    const el = document.getElementById('visitor');
+    if (COUNTER_FIXED && /^\d{6}$/.test(COUNTER_FIXED)) {
+      el.textContent = COUNTER_FIXED;
+    } else {
+      const count = Math.min(32, rows.length);
+      el.textContent = String(count).padStart(6,'0');
+    }
+  }catch(err){
+    console.error(err);
+    const n = document.getElementById('notice');
+    n.style.display = 'block';
+    n.textContent = 'CSVの読み込みに失敗しました。時間をおいて再読み込みしてください。';
+  }
+})();
+</script>
+</body>
+</html>
