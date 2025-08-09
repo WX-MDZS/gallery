@@ -10,63 +10,65 @@
   --shadow: 0 10px 24px rgba(0,0,0,.08);
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
   --icon-size: 124px;
-  --card-w: 260px;          /* ← カード幅を固定 */
+  --card-w: 240px;   /* ←少しだけタイトに */
+  --pad: 14px;       /* カード上パディング（ポップ位置計算に使用） */
 }
 
 /* base */
 *{box-sizing:border-box}
 html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif}
-body{margin:0;padding:0 0 56px;text-align:center}
+body{margin:0;padding:0 0 52px;text-align:center}
 
 /* header */
-header{padding:24px 10px 10px}
+header{padding:22px 10px 8px}
 header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
-/* 上部の見出し群（サイズ入れ替え済み） */
+/* 見出し群（サイズは前回のまま） */
 .counter{
-  margin: 10px auto 8px;
+  margin: 8px auto 6px;
   width:min(920px,92vw);
   font-weight:900;
-  font-size: clamp(22px, 3.0vw, 32px); /* ←大きく */
+  font-size: clamp(22px, 3.0vw, 32px);
 }
 .counter .num{letter-spacing:.06em}
-.desc{margin: 4px 0 18px; font-size: .95rem; color:#555;}
+.desc{margin: 2px 0 16px; font-size:.95rem; color:#555;}
 .section-title{
-  margin: 22px 0 32px;             /* “2行分”の余白 */
-  font-size: clamp(18px, 2.2vw, 24px); /* ←小さく（カウンタより小） */
-  font-weight: 800;
+  margin: 20px 0 28px;                 /* ←2行ぶん開けつつ少しだけタイト */
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight:800;
 }
 
-/* 注意表示（見出し推測など） */
+/* 注意表示 */
 .notice{
   background:#fff9e6;border:1px solid #f2e2b6;color:#7a5a00;
-  width:min(1000px,92vw);margin:0 auto 18px;padding:12px 14px;
+  width:min(1000px,92vw);margin:0 auto 16px;padding:12px 14px;
   border-radius:12px;text-align:left;
 }
 
-/* grid：列数をブレークポイントで固定。1列にはしない */
+/* ===== Grid =====
+   PC=4列固定 / 中=3列 / SP=2列。１列には落ちません。 */
 .gallery{
   width:min(1100px,96vw);
   margin:0 auto;
   display:grid;
-  grid-template-columns: repeat(4, var(--card-w)); /* PC 4列 */
+  grid-template-columns: repeat(4, var(--card-w));  /* PC 4列固定 */
   justify-content:center;
-  gap: 28px;
+  gap: 20px;                                       /* 余白を少しタイトに */
 }
-@media (max-width:1100px){
+@media (max-width:1040px){
   .gallery{ grid-template-columns: repeat(3, var(--card-w)); } /* タブレット 3列 */
 }
-@media (max-width:780px){
+@media (max-width:760px){
   .gallery{ grid-template-columns: repeat(2, var(--card-w)); } /* スマホ 2列 */
 }
 
-/* card（サイズ固定） */
+/* card（サイズ固定 & 余白タイト） */
 .card{
   position:relative;
   background:#fff;
-  border-radius:18px;
+  border-radius:16px;
   width: var(--card-w);
-  padding: 18px 10px 14px;
+  padding: var(--pad) 8px 12px;
   box-shadow: var(--shadow);
   transition: box-shadow .2s ease, transform .2s ease;
 }
@@ -76,12 +78,12 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon-wrap{
   width: var(--icon-size);
   height: var(--icon-size);
-  margin: 0 auto 12px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 4px solid rgba(103,167,186,.28);
-  outline: 2px solid var(--accent);
-  outline-offset: -6px;
+  margin: 0 auto 10px;                 /* 少しタイトに */
+  border-radius:50%;
+  overflow:hidden;
+  border:4px solid rgba(103,167,186,.28);
+  outline:2px solid var(--accent);
+  outline-offset:-6px;
   background:#f3f4f6;
   position:relative;
   transition: filter .18s;
@@ -89,25 +91,28 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon-wrap:hover{ filter: saturate(1.04) }
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
-/* ポップアップ（横並び固定） */
+/* ===== ポップアップ =====
+   アイコンの“下1/3”あたりに少し重なる位置へ。 */
 .pop{
-  display: flex;
-  flex-direction: row !important;   /* ←縦並び阻止 */
-  gap: 10px;
+  display:flex;
+  flex-direction: row !important;      /* 縦並び阻止 */
+  gap:10px;
   justify-content:center;
   align-items:center;
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
-  top: calc(var(--icon-size) + 10px); /* アイコンすぐ下 */
-  padding: 6px 8px;
-  border-radius: 12px;
+  position:absolute;
+  left:50%;
+  /* アイコン下1/3 くらいに重ねる：
+     カード上パディング + アイコンの 0.70 位置に配置して少し沈める */
+  top: calc(var(--pad) + var(--icon-size) * 0.70);
+  transform: translate(-50%, -35%);    /* ←重なり量の微調整 */
+  padding:6px 8px;
+  border-radius:12px;
   background:#fff;
   border:1px solid rgba(0,0,0,.08);
-  box-shadow: 0 10px 24px rgba(0,0,0,.14);
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
+  box-shadow:0 10px 24px rgba(0,0,0,.14);
+  z-index:10;
+  opacity:0;
+  pointer-events:none;
   transition: opacity .18s ease, transform .18s ease;
 }
 .card:hover .pop,
@@ -115,33 +120,33 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   opacity:1; pointer-events:auto;
 }
 
-/* ボタン（色統一＋太字） */
+/* ボタン（太字） */
 .pill{
   display:inline-block;
   min-width:64px;
-  padding:.38rem .7rem;
+  padding:.36rem .68rem;
   border-radius:999px;
   line-height:1;
   border:1px solid var(--accent);
-  color: var(--accent);
+  color:var(--accent);
   background:#fff;
   text-decoration:none;
   font-size:.95rem;
-  font-weight:700;                 /* ←太文字 */
+  font-weight:700;                     /* 太文字 */
   white-space:nowrap;
-  box-shadow: 0 2px 0 rgba(103,167,186,.08);
-  transition: background .12s, transform .06s;
+  box-shadow:0 2px 0 rgba(103,167,186,.08);
+  transition:background .12s, transform .06s;
 }
-.pill:active{ transform: translateY(1px) }
-.pill:hover{ background: rgba(103,167,186,.12) }
+.pill:hover{ background:rgba(103,167,186,.12) }
+.pill:active{ transform:translateY(1px) }
 
-/* 名前（黒リンク） */
-.name{ margin: 48px 0 4px; font-weight:700; font-size:1.02rem; }
+/* 名前：余白を少し詰める（ポップが重なっても読みやすく） */
+.name{ margin: 34px 0 2px; font-weight:700; font-size:1.02rem; }
 .name a{ color:#111; text-decoration:none; }
 .name a:focus-visible{ outline:2px solid var(--accent) }
 
 /* footer */
-footer{margin: 30px 0 0; color:#666; font-size:.9rem}
+footer{margin:26px 0 0; color:#666; font-size:.9rem}
 </style>
 </head>
 <body>
@@ -164,11 +169,11 @@ footer{margin: 30px 0 0; color:#666; font-size:.9rem}
 <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-/* ====== 設定（CSV 公開リンク） ====== */
+/* ===== 設定（CSV 公開リンク） ===== */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
-/* ====== 訪問カウンター ====== */
+/* 訪問カウンター */
 (() => {
   try{
     const el = document.getElementById('visitor');
@@ -178,7 +183,7 @@ const CSV_URL =
   }catch(_){}
 })();
 
-/* ====== CSV 読み込み ====== */
+/* CSV 読み込み */
 async function loadCSV(url){
   const res = await fetch(url, {cache:'no-store'});
   const text = await res.text();
@@ -210,12 +215,11 @@ async function loadCSV(url){
   });
 }
 
-/* ====== カード描画 ====== */
+/* カード生成 */
 function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   const card = document.createElement('div');
   card.className = 'card';
 
-  // アイコン
   const iconWrap = document.createElement('div');
   iconWrap.className = 'icon-wrap';
   const img = document.createElement('img');
@@ -225,7 +229,6 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   iconWrap.appendChild(img);
   card.appendChild(iconWrap);
 
-  // ポップアップ
   const pop = document.createElement('div');
   pop.className = 'pop';
 
@@ -247,7 +250,6 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   pop.appendChild(toFb);
   card.appendChild(pop);
 
-  // 名前（Twitterリンク）
   const name = document.createElement('div');
   name.className = 'name';
   const tw = document.createElement('a');
@@ -258,7 +260,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   name.appendChild(tw);
   card.appendChild(name);
 
-  // モバイル：タップで開閉
+  /* モバイル：タップで開閉 */
   iconWrap.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -266,7 +268,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   });
   iconWrap.tabIndex = 0;
   iconWrap.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' || e.key === ' '){
+    if(e.key==='Enter' || e.key===' '){
       e.preventDefault();
       card.classList.toggle('pop-open');
     }
@@ -278,7 +280,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   return card;
 }
 
-/* ====== init ====== */
+/* init */
 (async ()=>{
   try{
     const rows = await loadCSV(CSV_URL);
