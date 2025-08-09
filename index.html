@@ -87,6 +87,22 @@ h2{margin:8px 0 4px;text-align:center;font-size:clamp(20px,2.6vw,28px)}
 
 /* クリックの逃し防止（モバイルで1回タップで開き、外をタップで閉じる） */
 .card{touch-action:manipulation}
+
+/* ===== 背景：下固定（スクロールしても動かない） ===== */
+body::after{
+  content:"";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 画像パス */
+  background: url("./assets/haikei.jpg") center bottom / cover no-repeat;
+  /* 表示する高さ（画面に応じて可変） */
+  height: min(42vh, 380px);
+  z-index: -1;           /* すべての要素の背面へ */
+  pointer-events: none;  /* クリック/スクロールの邪魔をしない */
+}
+  
 </style>
 </head>
 <body>
@@ -266,3 +282,4 @@ init();
 </script>
 </body>
 </html>
+
