@@ -11,35 +11,36 @@
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
   --icon-size: 124px;
 }
-
-/* base */
 *{box-sizing:border-box}
-html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif}
+html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Sans",Meiryo,sans-serif}
 body{margin:0;padding:0 0 56px;text-align:center}
 
 /* header */
 header{padding:24px 10px 10px}
 header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
-h1{
-  font-weight:900;
-  line-height:1.2;
-  margin: 8px 0 0;
+/* あなたは… を大きく太字 */
+.counter{
+  margin: 16px auto 6px;
+  width:min(920px,92vw);
   font-size: clamp(22px, 3.0vw, 32px);
+  font-weight: 900;
 }
-.desc{margin: 8px 0 0; font-size: .95rem; color:#555;}
-.counter{margin: 16px auto 18px; width:min(920px,92vw);}
-.counter strong{color:#000; font-weight:900}
 .counter .num{letter-spacing:.06em}
 
-/* 「作品一覧」の下を 2 行ぶん空ける */
+/* 説明文 */
+.desc{margin: 4px 0 0; font-size: .95rem; color:#555;}
+
+/* 作品一覧 見出し（少し小さめ）＋ 下に2行ぶん余白 */
 .section-title{
-  margin: 22px 0 32px; /* ←ここで“2行ぶん”の余白 */
-  font-size: clamp(20px, 2.4vw, 28px);
+  margin: 22px 0 32px;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 700;
 }
 
-/* 注意表示（見出し推測など） */
+/* 注意表示（自動推測メッセージ用） */
 .notice{
+  display:none;
   background:#fff9e6;
   border:1px solid #f2e2b6;
   color:#7a5a00;
@@ -74,9 +75,8 @@ h1{
   box-shadow: var(--shadow);
   transition: box-shadow .2s ease, transform .2s ease;
 }
-.card:hover{
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-2px);
+@media(hover:hover){
+  .card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
 }
 
 /* icon */
@@ -92,23 +92,22 @@ h1{
   background:#f3f4f6;
   position:relative;
   transition: filter .18s;
+  cursor:pointer;
 }
 .icon-wrap:hover{ filter: saturate(1.04) }
-
-/* 画像 */
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ポップアップ（ボタン2個：横並び） */
 .pop{
-  display: flex;
-  flex-direction: row !important;    /* ←縦になるのを強制的に阻止 */
+  display: flex !important;
+  flex-direction: row !important;  /* ←縦並びを完全に阻止 */
   gap: 10px;
   justify-content:center;
   align-items:center;
   position: absolute;
   left: 50%;
   transform: translate(-50%, 0);
-  top: calc(var(--icon-size) + 10px); /* アイコンの“すぐ下”に表示 */
+  top: calc(var(--icon-size) + 10px); /* アイコンすぐ下 */
   padding: 6px 8px;
   border-radius: 12px;
   background:#fff;
@@ -120,16 +119,17 @@ h1{
   transition: opacity .18s ease, transform .18s ease;
 }
 
-/* hover/tap で表示 */
-.card:hover .pop,
-.card.pop-open .pop{
-  opacity:1;
-  pointer-events:auto;
+/* PC: hoverで表示 / モバイル: .pop-open クラスで表示 */
+@media(hover:hover){
+  .card:hover .pop{ opacity:1; pointer-events:auto; }
 }
+.card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
-/* ボタン（色は R103 G167 B186 で統一） */
+/* ボタン */
 .pill{
-  display:inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   min-width:64px;
   padding: .38rem .7rem;
   border-radius:999px;
@@ -141,14 +141,14 @@ h1{
   font-size:.95rem;
   white-space:nowrap;
   box-shadow: 0 2px 0 rgba(103,167,186,.08);
-  transition: background .12s, transform .06s;
+  transition: background .12s, transform .06s, color .12s;
 }
 .pill:active{ transform: translateY(1px) }
 .pill:hover{ background: rgba(103,167,186,.12) }
 
-/* 名前（Twitter へのリンク・黒のまま） */
+/* 名前リンク（黒のまま） */
 .name{
-  margin: 48px 0 4px;  /* ポップアップの分だけ余白を確保 */
+  margin: 48px 0 4px;  /* ポップアップの高さぶん余白 */
   font-weight: 700;
   font-size: 1.02rem;
 }
@@ -158,7 +158,6 @@ h1{
 }
 .name a:focus-visible{ outline:2px solid var(--accent) }
 
-/* footer */
 footer{margin: 30px 0 0; color:#666; font-size:.9rem}
 </style>
 </head>
@@ -169,14 +168,13 @@ footer{margin: 30px 0 0; color:#666; font-size:.9rem}
 </header>
 
 <p class="counter">
-  あなたは「<strong class="num" id="visitor">000000</strong>」人目の姑蘇藍氏の先輩
+  あなたは「<span class="num" id="visitor">000000</span>」人目の姑蘇藍氏の先輩
 </p>
 <p class="desc">アイコン＝Twitter、ポップアップのボタン＝作品・感想</p>
 
-<h1 class="section-title">作品一覧</h1>
+<h2 class="section-title">作品一覧</h2>
 
-<!-- 見出しの自動判定メッセージ -->
-<p id="notice" class="notice" style="display:none"></p>
+<p id="notice" class="notice"></p>
 
 <section id="gallery" class="gallery" aria-live="polite"></section>
 
@@ -187,7 +185,7 @@ footer{margin: 30px 0 0; color:#666; font-size:.9rem}
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
-/* ====== 訪問カウンター（先輩） ====== */
+/* ====== カウンター（先輩） ====== */
 (() => {
   try{
     const el = document.getElementById('visitor');
@@ -201,73 +199,60 @@ const CSV_URL =
 async function loadCSV(url){
   const res = await fetch(url, {cache:'no-store'});
   const text = await res.text();
-  // 行に分割（BOM/余白除去）
   const lines = text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
   if(lines.length===0) return [];
 
-  // 1行目は見出し
-  const rawHeader = lines[0].split(',').map(s=>s.trim());
-  // 期待見出し
+  const header = lines[0].split(',').map(s=>s.trim());
   const expected = ["アイコン","名前","ツイッター","作品","感想"];
+  const notice = document.getElementById('notice');
 
-  // 見出しが完全一致かどうか
-  let header = rawHeader;
-  let headerOK = expected.every((h,i)=>rawHeader[i]===h);
-
-  if(!headerOK){
-    // 並びが（アイコン/名前/ツイッター/作品/感想）ならそのまま受理
-    const joined = rawHeader.join('/');
-    if(joined === expected.join('/')){
-      headerOK = true;
-    }else{
-      // 先頭行がデータっぽい場合に備えて「仮の見出し」をかぶせる
-      // ただし今回はユーザーが見出しを入れてくれているので基本ここは通らない想定
-      header = expected;
-      // 先頭行もデータとして扱うよう未使用
-      document.getElementById('notice').style.display = 'block';
-      document.getElementById('notice').textContent =
-        "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
-    }
+  // 見出しチェック
+  const ok = expected.every((h,i)=> header[i]===h);
+  if(!ok){
+    notice.style.display = 'block';
+    notice.textContent =
+      "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
+  }else{
+    notice.style.display = 'none';
   }
 
+  // データ行
   const rows = lines.slice(1).map(line=>{
     const cols = line.split(',').map(s=>s.trim());
     const obj = {};
-    header.forEach((h,i)=> obj[h] = (cols[i] || "").trim());
+    expected.forEach((h,i)=> obj[h] = (cols[i]||"").trim());
     return obj;
   });
   return rows;
 }
 
-/* ====== カード描画 ====== */
+/* ====== カード生成 ====== */
 function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   const card = document.createElement('div');
   card.className = 'card';
 
-  // アイコン
   const iconWrap = document.createElement('div');
   iconWrap.className = 'icon-wrap';
   const img = document.createElement('img');
   img.className = 'icon';
   img.alt = `${名前} のアイコン`;
-  img.src = `./icons/${アイコン}`;   // 例: 01.png
+  img.src = `./icons/${(アイコン||'').trim()}`;   // 例: 01.png
   iconWrap.appendChild(img);
   card.appendChild(iconWrap);
 
-  // ポップアップ（横並び）
   const pop = document.createElement('div');
   pop.className = 'pop';
 
   const toWork = document.createElement('a');
   toWork.className = 'pill';
-  toWork.href = 作品 || '#';
+  toWork.href = (作品||'#').trim();
   toWork.target = '_blank';
   toWork.rel = 'noopener';
   toWork.textContent = '作品';
 
   const toFb = document.createElement('a');
   toFb.className = 'pill';
-  toFb.href = 感想 || '#';
+  toFb.href = (感想||'#').trim();
   toFb.target = '_blank';
   toFb.rel = 'noopener';
   toFb.textContent = '感想';
@@ -276,24 +261,22 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   pop.appendChild(toFb);
   card.appendChild(pop);
 
-  // 名前（Twitter リンク・黒のまま）
   const name = document.createElement('div');
   name.className = 'name';
   const tw = document.createElement('a');
-  tw.href = ツイッター || '#';
+  tw.href = (ツイッター||'#').trim();
   tw.target = '_blank';
   tw.rel = 'noopener';
-  tw.textContent = 名前 || '';
+  tw.textContent = (名前||'').trim();
   name.appendChild(tw);
   card.appendChild(name);
 
-  // タップで開閉（モバイル）
+  /* ====== モバイル: アイコンタップで開閉 ====== */
   iconWrap.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
     card.classList.toggle('pop-open');
   });
-  // キーボードでも開閉できるように
   iconWrap.tabIndex = 0;
   iconWrap.addEventListener('keydown', (e)=>{
     if(e.key === 'Enter' || e.key === ' '){
@@ -301,8 +284,6 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
       card.classList.toggle('pop-open');
     }
   });
-
-  // どこか他所をタップしたら閉じる
   document.addEventListener('click', (e)=>{
     if(!card.contains(e.target)) card.classList.remove('pop-open');
   });
@@ -327,4 +308,3 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
 </script>
 </body>
 </html>
-
