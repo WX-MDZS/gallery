@@ -10,9 +10,9 @@
   --shadow: 0 10px 24px rgba(0,0,0,.08);
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
   --icon-size: 108px;
-  --card-w: 200px;
-  --gap-x: 14px;
-  --gap-y: 12px;
+  --card-w: 200px;     /* カード幅 */
+  --gap-x: 14px;       /* 列間 */
+  --gap-y: 12px;       /* 行間 */
 }
 
 /* base */
@@ -46,26 +46,29 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   border-radius:12px;text-align:left;
 }
 
-/* ==== Grid（PCは常に4固定。スマホ/タブレットだけ列数調整） ==== */
+/* ===== Grid ===== */
 .gallery{
   width:min(1100px,96vw);
   margin:0 auto;
   display:grid;
-  grid-template-columns: repeat(4, var(--card-w)); /* 常に4列 */
+  grid-template-columns: repeat(4, var(--card-w)); /* PC 4列固定 */
   justify-content:center;
   column-gap: var(--gap-x);
   row-gap: var(--gap-y);
-  /* 4列ぶんの最小幅を要求。PCで窓を狭めても横スクロールで4列維持 */
-  min-width: calc(var(--card-w) * 4 + var(--gap-x) * 3);
+  min-width: calc(var(--card-w) * 2 + var(--gap-x)); /* 2列未満に落ちない保険 */
   overflow-x:auto;
 }
-
-/* タブレット/スマホ（タッチデバイス）だけ列数を落とす */
-@media (any-pointer: coarse) and (min-width: 720px){
-  .gallery{ grid-template-columns: repeat(3, var(--card-w)); min-width: 0; }
+@media (max-width:1100px){
+  .gallery{ grid-template-columns: repeat(3, var(--card-w)); }
 }
-@media (any-pointer: coarse) and (max-width: 719px){
-  .gallery{ grid-template-columns: repeat(2, var(--card-w)); min-width: 0; }
+@media (max-width:860px){
+  .gallery{ grid-template-columns: repeat(2, var(--card-w)); }
+}
+@media (max-width:560px){
+  :root{ --card-w: 188px; --icon-size: 102px; --gap-x: 12px; --gap-y: 10px; }
+}
+@media (max-width:420px){
+  :root{ --card-w: 176px; --icon-size: 96px; --gap-x: 12px; --gap-y: 10px; }
 }
 
 /* card */
@@ -77,28 +80,32 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   padding: 10px 8px 10px;
   box-shadow: var(--shadow);
   transition: box-shadow .2s ease, transform .2s ease;
+  /* ↓ ホバー/開状態のポップアップを隣のカードより前に出す土台 */
+  z-index: 0;
 }
 .card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.card:hover,
+.card.pop-open{ z-index: 50; }   /* ← 前面へ */
 
 /* icon */
 .icon-wrap{
   width: var(--icon-size);
   height: var(--icon-size);
-  margin: 10px auto 6px;
+  margin: 2px auto 6px;
   border-radius:50%;
   overflow:hidden;
   border:4px solid rgba(103,167,186,.28);
   outline:2px solid var(--accent);
   outline-offset:-6px;
   background:#f3f4f6;
-  position:relative;              /* ← ポップアップの基準にする */
-  transition: filter .18s, box-shadow .18s;
+  position:relative;
+  transition: filter .18s;
 }
-.icon-wrap:hover{ filter: saturate(1.04); box-shadow: var(--shadow-hover); }
+.icon-wrap:hover{ filter: saturate(1.04) }
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ===== ポップアップ =====
-   アイコン内の“下1/3くらい”に重ねて表示（基準は .icon-wrap ） */
+   アイコンの“下1/3”に軽く重ねる。 */
 .pop{
   display:flex;
   flex-direction: row !important;
@@ -107,24 +114,23 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   align-items:center;
   position:absolute;
   left:50%;
-  top: 76%;                          /* ← 重ね位置（下側1/4〜1/3あたり） */
-  transform: translate(-50%, -50%);  /* 中心合わせ */
+  /* アイコン位置（カード上辺から）に合わせて計算配置 */
+  top: calc(10px + var(--icon-size) * 0.68);
+  transform: translate(-50%, -30%);
   padding:6px 8px;
   border-radius:12px;
   background:#fff;
   border:1px solid rgba(0,0,0,.08);
   box-shadow:0 10px 24px rgba(0,0,0,.14);
-  z-index:10;
+  /* ↓ どの要素よりも前に出す */
+  z-index: 1000;
   opacity:0;
   pointer-events:none;
   transition: opacity .18s ease, transform .18s ease;
 }
-/* hover/tap時に表示（.icon-wrap 内にある .pop を対象にする） */
-.card:hover .icon-wrap .pop,
-.card.pop-open .icon-wrap .pop{
-  opacity:1;
-  pointer-events:auto;
-}
+/* 表示トリガー：カード全体の hover/tap */
+.card:hover .pop,
+.card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
 /* 太字ボタン */
 .pill{
@@ -146,9 +152,9 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .pill:hover{ background:rgba(103,167,186,.12) }
 .pill:active{ transform:translateY(1px) }
 
-/* 名前（ポップアップを重ねても空き過ぎない） */
+/* 名前（アイコンに近づけ） */
 .name{
-  margin: 16px 0 2px;
+  margin: 18px 0 2px;
   font-weight:700;
   font-size:1.00rem;
 }
@@ -168,7 +174,7 @@ footer{margin:22px 0 0; color:#666; font-size:.9rem}
 <p class="counter">
   あなたは<strong class="num" id="visitor">000000</strong>人目の姑蘇藍氏の先輩
 </p>
-<p class="desc">お名前＝X、ポップアップボタン＝作品・感想</p>
+<p class="desc">お名前＝X、ポップアップのボタン＝作品・感想</p>
 
 <h1 class="section-title">作品一覧</h1>
 
@@ -179,6 +185,7 @@ footer{margin:22px 0 0; color:#666; font-size:.9rem}
 <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
+/* ===== CSV ===== */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
@@ -203,11 +210,14 @@ async function loadCSV(url){
   let header = rawHeader;
   let headerOK = expected.every((h,i)=>rawHeader[i]===h);
   if(!headerOK){
-    header = expected;
-    const n = document.getElementById('notice');
-    n.style.display = 'block';
-    n.textContent =
-      "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。";
+    const joined = rawHeader.join('/');
+    if(joined !== expected.join('/')){
+      header = expected;
+      const n = document.getElementById('notice');
+      n.style.display = 'block';
+      n.textContent =
+        "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
+    }
   }
   const rows = lines.slice(1).map(line=>{
     const cols = line.split(',').map(s=>s.trim());
@@ -230,27 +240,28 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   img.alt = `${名前} のアイコン`;
   img.src = `./icons/${アイコン}`;
   iconWrap.appendChild(img);
+  card.appendChild(iconWrap);
 
-  /* ポップアップは icon-wrap の内側に入れる（位置ズレ防止） */
   const pop = document.createElement('div');
   pop.className = 'pop';
+
   const toWork = document.createElement('a');
   toWork.className = 'pill';
   toWork.href = 作品 || '#';
   toWork.target = '_blank';
   toWork.rel = 'noopener';
   toWork.textContent = '作品';
+
   const toFb = document.createElement('a');
   toFb.className = 'pill';
   toFb.href = 感想 || '#';
   toFb.target = '_blank';
   toFb.rel = 'noopener';
   toFb.textContent = '感想';
+
   pop.appendChild(toWork);
   pop.appendChild(toFb);
-  iconWrap.appendChild(pop);
-
-  card.appendChild(iconWrap);
+  card.appendChild(pop);
 
   const name = document.createElement('div');
   name.className = 'name';
@@ -262,7 +273,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   name.appendChild(tw);
   card.appendChild(name);
 
-  /* モバイル：タップで開閉 */
+  /* モバイル：タップで開閉（カード全体） */
   iconWrap.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -288,6 +299,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
     const rows = await loadCSV(CSV_URL);
     const wrap = document.getElementById('gallery');
     wrap.innerHTML = '';
+    /* 32件＝4×8 */
     rows.slice(0,32).forEach(r => wrap.appendChild(makeCard(r)));
   }catch(err){
     console.error(err);
