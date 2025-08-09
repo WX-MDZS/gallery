@@ -10,9 +10,9 @@
   --shadow: 0 10px 24px rgba(0,0,0,.08);
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
   --icon-size: 108px;
-  --card-w: 200px;     /* ← ひと回り小さく */
-  --gap-x: 14px;       /* 列間 */
-  --gap-y: 12px;       /* 行間（少し狭め） */
+  --card-w: 200px;
+  --gap-x: 14px;
+  --gap-y: 12px;
 }
 
 /* base */
@@ -84,21 +84,21 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon-wrap{
   width: var(--icon-size);
   height: var(--icon-size);
-  margin: 10px auto 6px; /* 上下バランス調整 */
+  margin: 10px auto 6px;
   border-radius:50%;
   overflow:hidden;
   border:4px solid rgba(103,167,186,.28);
   outline:2px solid var(--accent);
   outline-offset:-6px;
   background:#f3f4f6;
-  position:relative;
+  position:relative;              /* ← ポップアップの基準にする */
   transition: filter .18s, box-shadow .18s;
 }
 .icon-wrap:hover{ filter: saturate(1.04); box-shadow: var(--shadow-hover); }
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ===== ポップアップ =====
-   アイコンの下に近い位置で配置 */
+   アイコン内の“下1/3くらい”に重ねて表示（基準は .icon-wrap ） */
 .pop{
   display:flex;
   flex-direction: row !important;
@@ -107,8 +107,8 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   align-items:center;
   position:absolute;
   left:50%;
-  top: calc(10px + var(--icon-size) + 8px);
-  transform: translate(-50%, 0);
+  top: 76%;                          /* ← 重ね位置（下側1/4〜1/3あたり） */
+  transform: translate(-50%, -50%);  /* 中心合わせ */
   padding:6px 8px;
   border-radius:12px;
   background:#fff;
@@ -119,8 +119,12 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   pointer-events:none;
   transition: opacity .18s ease, transform .18s ease;
 }
-.card:hover .pop,
-.card.pop-open .pop{ opacity:1; pointer-events:auto; }
+/* hover/tap時に表示（.icon-wrap 内にある .pop を対象にする） */
+.card:hover .icon-wrap .pop,
+.card.pop-open .icon-wrap .pop{
+  opacity:1;
+  pointer-events:auto;
+}
 
 /* 太字ボタン */
 .pill{
@@ -142,9 +146,9 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .pill:hover{ background:rgba(103,167,186,.12) }
 .pill:active{ transform:translateY(1px) }
 
-/* 名前 */
+/* 名前（ポップアップを重ねても空き過ぎない） */
 .name{
-  margin: 18px 0 2px;
+  margin: 16px 0 2px;
   font-weight:700;
   font-size:1.00rem;
 }
@@ -226,28 +230,27 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   img.alt = `${名前} のアイコン`;
   img.src = `./icons/${アイコン}`;
   iconWrap.appendChild(img);
-  card.appendChild(iconWrap);
 
+  /* ポップアップは icon-wrap の内側に入れる（位置ズレ防止） */
   const pop = document.createElement('div');
   pop.className = 'pop';
-
   const toWork = document.createElement('a');
   toWork.className = 'pill';
   toWork.href = 作品 || '#';
   toWork.target = '_blank';
   toWork.rel = 'noopener';
   toWork.textContent = '作品';
-
   const toFb = document.createElement('a');
   toFb.className = 'pill';
   toFb.href = 感想 || '#';
   toFb.target = '_blank';
   toFb.rel = 'noopener';
   toFb.textContent = '感想';
-
   pop.appendChild(toWork);
   pop.appendChild(toFb);
-  card.appendChild(pop);
+  iconWrap.appendChild(pop);
+
+  card.appendChild(iconWrap);
 
   const name = document.createElement('div');
   name.className = 'name';
