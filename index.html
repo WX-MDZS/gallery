@@ -102,6 +102,25 @@ body::after{
   z-index: -1;           /* すべての要素の背面へ */
   pointer-events: none;  /* クリック/スクロールの邪魔をしない */
 }
+/* ポップアップのボタンを横並び固定にする */
+.pop{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;              /* ボタン間のすき間 */
+  white-space: nowrap;     /* 改行させない */
+  min-width: 172px;        /* 2ボタン分の最低幅（必要なら調整） */
+  padding: .35rem .6rem;
+}
+
+/* 念のためボタン側も改行禁止＆横並びに強める */
+.pop .pill{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
   
 </style>
 </head>
@@ -282,4 +301,5 @@ init();
 </script>
 </body>
 </html>
+
 
