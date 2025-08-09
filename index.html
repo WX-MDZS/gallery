@@ -90,6 +90,49 @@
     border-radius:12px; background:#fff3f3; color:#a33; border:1px solid #f3caca;
     text-align:center; font-size:14px;
   }
+
+/* アイコン＋ボタンの入れ物：幅を決めて中央化、ボタンの高さ分だけ下に余白を確保 */
+.icon-wrap{
+  position: relative;
+  display: block;
+  width: 128px;           /* ← アイコンより少し広めに固定 */
+  margin: 0 auto;         /* カード内中央 */
+  padding-bottom: 64px;    /* ← この分だけ下に「ボタン置き場」を確保（重なり防止） */
+}
+
+/* ボタン：常にアイコンの真下＆左右中央。横並びを強制 */
+.pop{
+  position: absolute;
+  left: 50%;
+  bottom: 0;              /* ← .icon-wrap の一番下に固定（名前の“上”） */
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+/* ホバー/フォーカスで表示（挙動はそのまま） */
+.card:hover .pop,
+.card:focus-within .pop{
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* 名前：常に中央寄せ、ボタンからの間隔を少しだけ */
+.name{
+  font-size: 15px;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+  margin-top: 4px;        /* ボタンとの距離は .icon-wrap の padding-bottom で確保されるので控えめでOK */
+}
+
+  
 </style>
 </head>
 <body>
@@ -276,3 +319,4 @@ function el(tag, cls, text){
 </script>
 </body>
 </html>
+
