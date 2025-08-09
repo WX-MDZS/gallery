@@ -120,7 +120,6 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .card:hover .pop,
 .card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
-/* pill（色は R103 G167 B186） */
 .pill{
   display:inline-block;
   min-width:64px;
@@ -132,12 +131,12 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   background:#fff;
   text-decoration:none;
   font-size:.95rem;
+  font-weight: 700; /* ★ 追加：太文字に */
   white-space:nowrap;
   box-shadow: 0 2px 0 rgba(103,167,186,.08);
   transition: background .12s, transform .06s;
 }
-.pill:hover{ background: rgba(103,167,186,.12) }
-.pill:active{ transform: translateY(1px) }
+
 
 /* 名前（Twitter へのリンク・黒のまま） */
 .name{
@@ -286,3 +285,4 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
 </script>
 </body>
 </html>
+
