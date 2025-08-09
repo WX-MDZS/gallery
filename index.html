@@ -10,37 +10,38 @@
   --shadow: 0 10px 24px rgba(0,0,0,.08);
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
   --icon-size: 124px;
+  --card-w: 260px;            /* ← カードの幅を固定 */
 }
+
+/* base */
 *{box-sizing:border-box}
-html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Sans",Meiryo,sans-serif}
+html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif}
 body{margin:0;padding:0 0 56px;text-align:center}
 
-/* header */
+/* header（ロゴは現状そのまま） */
 header{padding:24px 10px 10px}
 header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
-/* あなたは… を大きく太字 */
+/* カウンターを大きく太く */
 .counter{
-  margin: 16px auto 6px;
+  margin: 10px auto 8px;
   width:min(920px,92vw);
-  font-size: clamp(22px, 3.0vw, 32px);
   font-weight: 900;
+  font-size: clamp(20px, 2.8vw, 30px);   /* ← 大きめ */
+  line-height: 1.3;
 }
 .counter .num{letter-spacing:.06em}
+.desc{margin: 6px 0 0; font-size: .95rem; color:#555;}
 
-/* 説明文 */
-.desc{margin: 4px 0 0; font-size: .95rem; color:#555;}
-
-/* 作品一覧 見出し（少し小さめ）＋ 下に2行ぶん余白 */
+/* 作品一覧は少し小さく（位置は据え置き） */
 .section-title{
-  margin: 22px 0 32px;
-  font-size: clamp(20px, 2.2vw, 26px);
+  margin: 22px 0 32px;                 /* 2 行ぶんの余白は維持 */
   font-weight: 700;
+  font-size: clamp(18px, 2.0vw, 22px);  /* ← 控えめに */
 }
 
-/* 注意表示（自動推測メッセージ用） */
+/* 注意表示（見出し推測など） */
 .notice{
-  display:none;
   background:#fff9e6;
   border:1px solid #f2e2b6;
   color:#7a5a00;
@@ -49,35 +50,30 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   padding: 12px 14px;
   border-radius: 12px;
   text-align:left;
+  display:none;
 }
 
-/* grid */
+/* grid：カードサイズは固定、列数だけ自動調整 */
 .gallery{
-  width:min(1040px,92vw);
+  width:min(1140px,94vw);
   margin: 0 auto;
   display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-}
-@media (max-width:900px){
-  .gallery{grid-template-columns: repeat(3, 1fr);}
-}
-@media (max-width:600px){
-  .gallery{grid-template-columns: repeat(2, 1fr);}
+  grid-template-columns: repeat(auto-fit, var(--card-w)); /* ← 固定幅で並べる */
+  justify-content: center;     /* 余白は中央寄せ */
+  gap: 28px;
 }
 
 /* card */
 .card{
   position:relative;
+  width: var(--card-w);         /* ← 幅固定 */
   background:#fff;
   border-radius:18px;
   padding: 18px 10px 14px;
   box-shadow: var(--shadow);
   transition: box-shadow .2s ease, transform .2s ease;
 }
-@media(hover:hover){
-  .card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-}
+.card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
 
 /* icon */
 .icon-wrap{
@@ -92,22 +88,23 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   background:#f3f4f6;
   position:relative;
   transition: filter .18s;
-  cursor:pointer;
 }
 .icon-wrap:hover{ filter: saturate(1.04) }
+
+/* 画像 */
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ポップアップ（ボタン2個：横並び） */
 .pop{
-  display: flex !important;
-  flex-direction: row !important;  /* ←縦並びを完全に阻止 */
+  display: flex;
+  flex-direction: row !important; /* ← 縦化を阻止 */
   gap: 10px;
   justify-content:center;
   align-items:center;
   position: absolute;
   left: 50%;
   transform: translate(-50%, 0);
-  top: calc(var(--icon-size) + 10px); /* アイコンすぐ下 */
+  top: calc(var(--icon-size) + 10px);  /* アイコン直下 */
   padding: 6px 8px;
   border-radius: 12px;
   background:#fff;
@@ -119,17 +116,13 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   transition: opacity .18s ease, transform .18s ease;
 }
 
-/* PC: hoverで表示 / モバイル: .pop-open クラスで表示 */
-@media(hover:hover){
-  .card:hover .pop{ opacity:1; pointer-events:auto; }
-}
+/* hover/tap で表示 */
+.card:hover .pop,
 .card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
-/* ボタン */
+/* pill（色は R103 G167 B186） */
 .pill{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
+  display:inline-block;
   min-width:64px;
   padding: .38rem .7rem;
   border-radius:999px;
@@ -141,23 +134,21 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   font-size:.95rem;
   white-space:nowrap;
   box-shadow: 0 2px 0 rgba(103,167,186,.08);
-  transition: background .12s, transform .06s, color .12s;
+  transition: background .12s, transform .06s;
 }
-.pill:active{ transform: translateY(1px) }
 .pill:hover{ background: rgba(103,167,186,.12) }
+.pill:active{ transform: translateY(1px) }
 
-/* 名前リンク（黒のまま） */
+/* 名前（Twitter へのリンク・黒のまま） */
 .name{
-  margin: 48px 0 4px;  /* ポップアップの高さぶん余白 */
+  margin: 48px 0 4px;  /* ポップアップの分だけ余白確保 */
   font-weight: 700;
   font-size: 1.02rem;
 }
-.name a{
-  color:#111;
-  text-decoration:none;
-}
+.name a{ color:#111; text-decoration:none; }
 .name a:focus-visible{ outline:2px solid var(--accent) }
 
+/* footer */
 footer{margin: 30px 0 0; color:#666; font-size:.9rem}
 </style>
 </head>
@@ -172,7 +163,7 @@ footer{margin: 30px 0 0; color:#666; font-size:.9rem}
 </p>
 <p class="desc">アイコン＝Twitter、ポップアップのボタン＝作品・感想</p>
 
-<h2 class="section-title">作品一覧</h2>
+<h1 class="section-title">作品一覧</h1>
 
 <p id="notice" class="notice"></p>
 
@@ -185,7 +176,7 @@ footer{margin: 30px 0 0; color:#666; font-size:.9rem}
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
-/* ====== カウンター（先輩） ====== */
+/* ====== 訪問カウンター（先輩） ====== */
 (() => {
   try{
     const el = document.getElementById('visitor');
@@ -200,91 +191,78 @@ async function loadCSV(url){
   const res = await fetch(url, {cache:'no-store'});
   const text = await res.text();
   const lines = text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
-  if(lines.length===0) return [];
+  if(!lines.length) return [];
 
+  // 1行目の見出しチェック
   const header = lines[0].split(',').map(s=>s.trim());
   const expected = ["アイコン","名前","ツイッター","作品","感想"];
-  const notice = document.getElementById('notice');
+  const ok = expected.every((h,i)=>header[i]===h);
 
-  // 見出しチェック
-  const ok = expected.every((h,i)=> header[i]===h);
   if(!ok){
-    notice.style.display = 'block';
-    notice.textContent =
-      "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
-  }else{
-    notice.style.display = 'none';
+    const n = document.getElementById('notice');
+    n.style.display = 'block';
+    n.textContent = "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
   }
 
-  // データ行
-  const rows = lines.slice(1).map(line=>{
+  return lines.slice(1).map(line=>{
     const cols = line.split(',').map(s=>s.trim());
-    const obj = {};
-    expected.forEach((h,i)=> obj[h] = (cols[i]||"").trim());
-    return obj;
+    return {
+      アイコン: cols[0]||"",
+      名前:     cols[1]||"",
+      ツイッター:cols[2]||"",
+      作品:     cols[3]||"",
+      感想:     cols[4]||""
+    };
   });
-  return rows;
 }
 
-/* ====== カード生成 ====== */
+/* ====== カード描画 ====== */
 function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   const card = document.createElement('div');
   card.className = 'card';
 
+  // icon
   const iconWrap = document.createElement('div');
   iconWrap.className = 'icon-wrap';
   const img = document.createElement('img');
   img.className = 'icon';
   img.alt = `${名前} のアイコン`;
-  img.src = `./icons/${(アイコン||'').trim()}`;   // 例: 01.png
+  img.src = `./icons/${アイコン}`;
   iconWrap.appendChild(img);
   card.appendChild(iconWrap);
 
+  // popup
   const pop = document.createElement('div');
   pop.className = 'pop';
-
-  const toWork = document.createElement('a');
-  toWork.className = 'pill';
-  toWork.href = (作品||'#').trim();
-  toWork.target = '_blank';
-  toWork.rel = 'noopener';
-  toWork.textContent = '作品';
-
-  const toFb = document.createElement('a');
-  toFb.className = 'pill';
-  toFb.href = (感想||'#').trim();
-  toFb.target = '_blank';
-  toFb.rel = 'noopener';
-  toFb.textContent = '感想';
-
+  const toWork = Object.assign(document.createElement('a'), {
+    className:'pill', href: 作品||'#', target:'_blank', rel:'noopener', textContent:'作品'
+  });
+  const toFb = Object.assign(document.createElement('a'), {
+    className:'pill', href: 感想||'#', target:'_blank', rel:'noopener', textContent:'感想'
+  });
   pop.appendChild(toWork);
   pop.appendChild(toFb);
   card.appendChild(pop);
 
+  // name
   const name = document.createElement('div');
   name.className = 'name';
-  const tw = document.createElement('a');
-  tw.href = (ツイッター||'#').trim();
-  tw.target = '_blank';
-  tw.rel = 'noopener';
-  tw.textContent = (名前||'').trim();
+  const tw = Object.assign(document.createElement('a'), {
+    href: ツイッター||'#', target:'_blank', rel:'noopener', textContent: 名前||''
+  });
   name.appendChild(tw);
   card.appendChild(name);
 
-  /* ====== モバイル: アイコンタップで開閉 ====== */
-  iconWrap.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
+  // mobile toggle
+  iconWrap.addEventListener('click', e=>{
+    e.preventDefault(); e.stopPropagation();
     card.classList.toggle('pop-open');
   });
   iconWrap.tabIndex = 0;
-  iconWrap.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      card.classList.toggle('pop-open');
-    }
+  iconWrap.addEventListener('keydown', e=>{
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); card.classList.toggle('pop-open'); }
   });
-  document.addEventListener('click', (e)=>{
+  document.addEventListener('click', e=>{
     if(!card.contains(e.target)) card.classList.remove('pop-open');
   });
 
@@ -297,12 +275,12 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
     const rows = await loadCSV(CSV_URL);
     const wrap = document.getElementById('gallery');
     wrap.innerHTML = '';
-    rows.forEach(r => wrap.appendChild(makeCard(r)));
+    rows.forEach(r=> wrap.appendChild(makeCard(r)));
   }catch(err){
-    console.error(err);
     const n = document.getElementById('notice');
     n.style.display = 'block';
     n.textContent = 'CSVの読み込みに失敗しました。時間をおいて再読み込みしてください。';
+    console.error(err);
   }
 })();
 </script>
