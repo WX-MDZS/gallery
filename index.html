@@ -1,299 +1,67 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>雲隠深情</title>
-<style>
-:root{
-  --accent: rgb(103,167,186); /* R103 G167 B186 */
-  --ring: #cfe7f2;
-  --card: #fff;
-  --shadow: 0 6px 26px rgba(0,0,0,.08);
-}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{
-  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",sans-serif;
-  color:#222; background:#fff; text-align:center;
-}
-header{padding:24px 16px 8px}
-header img{max-width:920px;width:92%;height:auto;display:block;margin:0 auto}
-h2{font-size:28px;margin:14px 0 10px}
-.desc{font-size:14px;color:#555;margin:6px 0 10px}
-.counter{font-weight:700;margin:6px 0 18px}
-.counter .num{letter-spacing:.06em}
-
-.gallery{
-  --gap: 22px;
-  display:grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: var(--gap);
-  max-width: 980px;
-  padding: 8px 16px 48px;
-  margin: 0 auto;
-}
-@media (max-width: 720px){
-  .gallery{grid-template-columns: repeat(2, minmax(0,1fr)); --gap:16px}
-}
-
-.card{
-  position:relative;
-  background:var(--card);
-  border-radius:18px;
-  box-shadow: var(--shadow);
-  padding:18px 10px 14px;
-  transition:transform .15s ease, box-shadow .15s ease;
-}
-.card:hover{ transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.12) }
-
-.icon-wrap{
-  position:relative;
-  display:block;
-  margin: 6px auto 0;
-  width: 132px; height: 132px;
-}
-.icon{
-  width:132px; height:132px; border-radius:50%;
-  border: 3px solid var(--ring);
-  object-fit:cover; display:block;
-  filter: drop-shadow(0 0 0 rgba(0,0,0,0));
-  transition: filter .18s ease;
-}
-.card:hover .icon{ filter: drop-shadow(0 8px 18px rgba(0,0,0,.16)) }
-
-/* ポップアップ（横並び／アイコンの下・名前の上） */
-.pop{
-  position:absolute;
-  left:50%; top: calc(100% + 10px);
-  transform: translateX(-50%);
-  display:flex; gap:10px;
-  background:#fff;
-  border:1px solid var(--ring);
-  border-radius:12px;
-  padding:8px 10px;
-  box-shadow: 0 10px 24px rgba(0,0,0,.10);
-  opacity:0; pointer-events:none; transition:opacity .15s ease;
-  z-index: 5;
-}
-.card:hover .pop,
-.card:focus-within .pop{ opacity:1; pointer-events:auto }
-
-.pill{
-  display:inline-block;
-  font-size:14px; line-height:1;
-  border:1px solid var(--accent);
-  color:var(--accent); text-decoration:none;
-  border-radius:999px; padding:.55rem .9rem;
-  background:#f8fafc; transition:background .12s, border-color .12s, color .12s;
-}
-.pill:hover{ background: rgba(103,167,186,.15) }
-
-/* 名前（黒／Xへのリンク） */
-.name{
-  margin:56px 0 6px; /* ポップアップ分の余白を確保 */
-  font-size:16px; font-weight:700;
-}
-.name a{ color:#111; text-decoration:none }
-.name a:hover{ text-decoration:underline }
-
-/* できるだけ正方形寄りに・下の余白を絞る */
-.card{ min-height: 268px }
-@media (max-width:720px){
-  .icon-wrap{ width:118px; height:118px }
-  .icon{ width:118px; height:118px; border-width:2px }
-  .pop{ gap:8px; padding:6px 8px }
-  .pill{ font-size:13px; padding:.50rem .75rem }
-  .name{ margin-top:52px }
-  .card{ min-height: 246px }
-}
-
-/* エラー表示 */
-.alert{
-  max-width:980px;margin:12px auto;padding:12px 14px;border:1px solid #f5b7b1;
-  color:#a33;background:#fdecea;border-radius:10px;font-size:14px
-}
-footer{color:#666;font-size:14px;margin:34px 0 24px}
-</style>
-</head>
-<body>
-
-<header>
-  <img src="./assets/title.jpg" alt="雲隠深情">
-</header>
-
-<!-- カウンター → 説明 → 見出し の順 -->
-<p class="counter">あなたは「<span class="num" id="vnum">000000</span>」人目の姑蘇藍氏の弟子</p>
-<p class="desc">アイコン＝Twitter、ポップアップのボタン＝作品・感想</p>
-<h2>作品一覧</h2>
-
-<div id="alert" class="alert" style="display:none"></div>
-<section id="gallery" class="gallery" aria-live="polite"></section>
-
-<footer>雲隠探情企画 / 主催はくと</footer>
-
 <script>
-// ====== 設定（あなたのCSV公開URLをここに） ======
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
+const CSV_URL = "（あなたの公開CSVのURL）";
 
-// 画像は ./icons/ を基準に読み込みます（失敗時は ./assets/icons/ に自動フォールバック）
-const ICON_BASES = ["./icons/", "./assets/icons/"];
+// 余白・全角空白を除去して小文字に
+const norm = s => (s||"").toString().replace(/\s+/g,"").replace(/\u3000/g,"").toLowerCase();
 
-// ====== 訪問カウンター ======
-(function(){
-  try{
-    const k="visitCount"; let n=localStorage.getItem(k);
-    n = (n? parseInt(n,10):0) + 1; localStorage.setItem(k, n);
-    document.getElementById("vnum").textContent = String(n).padStart(6,"0");
-  }catch(e){}
-})();
-
-// ====== CSV 読み込み & 描画 ======
-const $g = document.getElementById("gallery");
-const $alert = document.getElementById("alert");
-
-// 列名ゆるくマッピング
-const keyMap = {
-  name: ["名前","name","表示名","おなまえ"],
-  icon: ["アイコン","icon","画像","アイコンファイル","ファイル","filename"],
-  work: ["作品","work","作品リンク","作品へ"],
-  review: ["感想","review","感想リンク","感想へ"],
-  x: ["x","twitter","ツイッター","X"]
+const HEADER_ALIASES = {
+  name:     ["名前","name"],
+  icon:     ["アイコン","icon","画像"],
+  x:        ["x","twitter","ツイッター"],
+  work:     ["作品","作品url"],
+  feedback: ["感想","感想フォーム","feedback","form"]
 };
-function pickKey(header){
-  const h = header.trim().toLowerCase();
-  for(const [std, alts] of Object.entries(keyMap)){
-    if (alts.some(a => a.toLowerCase()===h)) return std;
+
+function findIndex(headerRow, keys){
+  const H = headerRow.map(norm);
+  for(const k of keys.map(norm)){
+    const i = H.indexOf(k);
+    if(i !== -1) return i;
   }
-  // 未一致は空文字で返す
-  return "";
-}
-function normalizeIcon(v){
-  let s = (v||"").trim();
-  if(!s) return "";
-  // 例: "1" -> "01.png", "01" -> "01.png"
-  if(!/\.(png|jpg|jpeg|webp|gif)$/i.test(s)){
-    if(/^\d+$/.test(s)) s = s.padStart(2,"0") + ".png";
-    else s = s + ".png";
-  }
-  return s;
+  return -1;
 }
 
 async function loadCSV(url){
   const res = await fetch(url, {cache:"no-store"});
-  if(!res.ok) throw new Error("CSV を取得できませんでした");
   const text = await res.text();
 
-  const lines = text.replace(/\r\n/g,"\n").split("\n").filter(l=>l.trim()!=="");
-  if(lines.length<2) throw new Error("CSV にデータがありません");
+  // シンプルCSVパーサ（カンマと改行）
+  const rows = text.replace(/\r/g,"").split("\n").filter(r=>r.trim()!=="")
+                   .map(r => r.split(",").map(c => c.replace(/^"|"$/g,"")));
 
-  const headers = lines[0].split(",").map(s=>s.trim());
-  const cols = headers.map(h=>pickKey(h));
-
-  // 必須: name/icon/work/review/x を1つ以上含む
-  if(!cols.includes("name") || !cols.includes("icon")){
-    throw new Error("見出しの列名が一致せずデータを解釈できませんでした。見出し例：名前 / アイコン / 作品 / 感想 / X");
+  if(rows.length < 2){
+    throw new Error("CSVにデータ行がありません。");
   }
 
-  const rows = [];
-  for(let i=1;i<lines.length;i++){
-    const raw = lines[i];
-    if(!raw.trim()) continue;
-    const parts = raw.split(","); // ※ カンマを含む場合はシート側で「セルの表示形式：プレーンテキスト」を推奨
-    const obj = {name:"",icon:"",work:"",review:"",x:""};
-    for(let c=0;c<headers.length;c++){
-      const std = cols[c]; if(!std) continue;
-      obj[std] = (parts[c]||"").trim();
-    }
-    if(!obj.name && obj.icon) obj.name = obj.icon; // 名称欠落時のフォールバック
-    obj.icon = normalizeIcon(obj.icon);
-    if(!obj.icon) continue;
-    rows.push(obj);
-  }
-  return rows;
-}
-
-// 画像要素（フォールバック付）
-function iconImg(src){
-  const img = document.createElement("img");
-  img.src = ICON_BASES[0] + src;
-  img.className = "icon";
-  img.alt = "";
-  img.loading = "lazy";
-  img.onerror = ()=>{ // 1回だけフォールバック
-    if(img.dataset.fallbackDone) return;
-    img.dataset.fallbackDone = "1";
-    img.src = ICON_BASES[1] + src;
+  const header = rows[0];
+  const idx = {
+    name:     findIndex(header, HEADER_ALIASES.name),
+    icon:     findIndex(header, HEADER_ALIASES.icon),
+    x:        findIndex(header, HEADER_ALIASES.x),
+    work:     findIndex(header, HEADER_ALIASES.work),
+    feedback: findIndex(header, HEADER_ALIASES.feedback)
   };
-  return img;
-}
 
-function cardDOM(r){
-  const card = document.createElement("article");
-  card.className = "card";
-  card.tabIndex = 0;
-
-  // アイコン（リンクなし）
-  const wrap = document.createElement("div");
-  wrap.className = "icon-wrap";
-  wrap.appendChild(iconImg(r.icon));
-  card.appendChild(wrap);
-
-  // ポップアップ（横並び）
-  const pop = document.createElement("div");
-  pop.className = "pop";
-  const toWork = document.createElement("a");
-  toWork.href = r.work || "#"; toWork.target="_blank"; toWork.rel="noopener";
-  toWork.className = "pill"; toWork.textContent = "作品";
-  const toRev = document.createElement("a");
-  toRev.href = r.review || "#"; toRev.target="_blank"; toRev.rel="noopener";
-  toRev.className = "pill"; toRev.textContent = "感想";
-  // 空リンクは押せないように
-  if(!r.work) toWork.href="javascript:void(0)";
-  if(!r.review) toRev.href="javascript:void(0)";
-  pop.appendChild(toWork); pop.appendChild(toRev);
-  wrap.appendChild(pop);
-
-  // 名前（黒・Xへ）
-  const name = document.createElement("div");
-  name.className = "name";
-  const a = document.createElement("a");
-  a.textContent = r.name || r.icon;
-  if(r.x){ a.href = r.x; a.target="_blank"; a.rel="noopener"; }
-  name.appendChild(a);
-  card.appendChild(name);
-
-  // スマホ：1回タップでポップ、2回目で閉じる
-  card.addEventListener("touchstart", (e)=>{
-    if(!card.classList.contains("topen")){
-      card.classList.add("topen");
-      setTimeout(()=>card.classList.remove("topen"), 2500);
-      e.preventDefault();
-    }
-  }, {passive:false});
-
-  return card;
-}
-
-(async function init(){
-  try{
-    const rows = await loadCSV(CSV_URL);
-    if(rows.length===0){
-      $alert.style.display="block";
-      $alert.textContent = "CSV に有効な行が見つかりませんでした。";
-      return;
-    }
-    const frag = document.createDocumentFragment();
-    rows.forEach(r=>frag.appendChild(cardDOM(r)));
-    $g.innerHTML = "";
-    $g.appendChild(frag);
-  }catch(err){
-    $alert.style.display="block";
-    $alert.textContent = "CSVは読み取れましたが、見出しの列名が一致せずデータを解釈できませんでした。見出し例： 名前 / アイコン / 作品 / 感想 / X";
-    console.error(err);
+  // どれか見つからない場合は不足見出しを表示
+  const missing = Object.entries(idx).filter(([,v]) => v === -1).map(([k])=>k);
+  if(missing.length){
+    const need = "名前 / アイコン / 作品 / 感想 / X のいずれか";
+    throw new Error(`CSVの見出しが見つかりません: ${missing.join(", ")}。許容される見出し例: ${need}`);
   }
-})();
-</script>
-</body>
-</html>
 
+  // データ整形
+  const data = rows.slice(1)
+                  .filter(r => r.some(c => String(c).trim() !== "")) // 空行除外
+                  .map(r => ({
+                    name: r[idx.name]?.trim(),
+                    icon: r[idx.icon]?.trim(),
+                    x:    r[idx.x]?.trim(),
+                    work: r[idx.work]?.trim(),
+                    fb:   r[idx.feedback]?.trim()
+                  }));
+  return data;
+}
+
+// ここから先は data を使ってカードを描画（あなたの既存描画ロジック）
+// 例：loadCSV(CSV_URL).then(render).catch(showError);
+</script>
