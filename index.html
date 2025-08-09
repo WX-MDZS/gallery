@@ -1,151 +1,277 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>雲隠深情</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>雲隠深情 | 作品一覧</title>
 <style>
-  body {
-    font-family: "Noto Sans JP", sans-serif;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    background-color: #fff;
-  }
+:root{
+  --accent: rgb(103,167,186);
+  --shadow: 0 10px 24px rgba(0,0,0,.08);
+  --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
+  --icon-size: 108px;
+  --card-w: 220px;        /* カード幅 */
+  --gap: 20px;            /* カード間隔 */
+}
 
-  img.logo {
-    max-width: 90%;
-    height: auto;
-    margin-top: 20px;
-  }
+/* base */
+*{box-sizing:border-box}
+html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Sans",Meiryo,sans-serif}
+body{margin:0;padding:0 0 56px;text-align:center}
 
-  .counter {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-top: 10px;
-  }
+/* header */
+header{padding:22px 10px 8px}
+header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
-  .description {
-    font-size: 0.9em;
-    color: #555;
-    line-height: 1.6em;
-    margin-bottom: 20px;
-  }
+/* 見出し/説明 */
+.counter{
+  margin: 8px auto 6px;
+  width:min(920px,92vw);
+  font-weight:900;
+  font-size: clamp(22px, 3.0vw, 32px);
+}
+.counter .num{letter-spacing:.06em}
+.lead{margin: 4px 0 0; font-size:.95rem; color:#555;}
+.section-title{
+  margin: 18px 0 22px;
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight:800;
+}
 
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* PCでは4列固定 */
-    gap: 20px;
-    justify-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px 40px;
-  }
+/* 注意表示（必要時に JS で表示） */
+.notice{
+  background:#fff9e6;border:1px solid #f2e2b6;color:#7a5a00;
+  width:min(1000px,92vw);margin:0 auto 16px;padding:12px 14px;
+  border-radius:12px;text-align:left;display:none;
+}
 
-  @media (max-width: 768px) {
-    .grid-container {
-      grid-template-columns: repeat(2, 1fr); /* タブレット・スマホで2列 */
-    }
-  }
+/* ===== Grid =====
+   PC=4列を固定。足りない幅では横スクロール。
+   モバイルは 2 列。
+*/
+.wrap{
+  /* PC で常に 4 列分の幅を確保 */
+  --wrap-w: calc(var(--card-w)*4 + var(--gap)*3);
+  width: var(--wrap-w);
+  max-width: 100vw;
+  margin: 0 auto;
+  overflow-x: auto;      /* 幅不足時は横スクロール */
+}
+.gallery{
+  display:grid;
+  grid-template-columns: repeat(4, var(--card-w));
+  gap: var(--gap);
+  padding-bottom: 4px;
+}
 
-  @media (max-width: 480px) {
-    .grid-container {
-      grid-template-columns: 1fr; /* 幅狭スマホで1列 */
-    }
-  }
+/* スマホは 2 列に切替・はみ出し無し */
+@media (max-width: 720px){
+  .wrap{ width: min(480px, 96vw); overflow-x: hidden; }
+  .gallery{ grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  :root{ --icon-size: 104px; }
+}
 
-  .card {
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 200px;
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
+/* card */
+.card{
+  position:relative;
+  background:#fff;
+  border-radius:16px;
+  width: var(--card-w);
+  padding: 12px 8px 14px;
+  box-shadow: var(--shadow);
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+.card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+@media (max-width: 720px){
+  .card{ width:auto; }
+}
 
-  .icon {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid #aee0ef;
-    overflow: hidden;
-    position: relative;
-  }
+/* icon */
+.icon-wrap{
+  width: var(--icon-size);
+  height: var(--icon-size);
+  margin: 2px auto 6px;
+  border-radius:50%;
+  overflow:hidden;
+  border:4px solid rgba(103,167,186,.28);
+  outline:2px solid var(--accent);
+  outline-offset:-6px;
+  background:#f3f4f6;
+  position:relative;
+  transition: filter .18s;
+}
+.icon-wrap:hover{ filter: saturate(1.04) }
+.icon{width:100%;height:100%;object-fit:cover;display:block}
 
-  .icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+/* ポップアップ（アイコン下1/3に重ね、カード下にも出る） */
+.pop{
+  display:flex; gap:10px; justify-content:center; align-items:center;
+  position:absolute; left:50%;
+  top: calc(var(--icon-size) * 0.83);        /* 下 1/3 程度へ重ねる */
+  transform: translate(-50%, -30%);
+  padding:6px 8px; border-radius:12px; background:#fff;
+  border:1px solid rgba(0,0,0,.08); box-shadow:0 10px 24px rgba(0,0,0,.14);
+  z-index:10; opacity:0; pointer-events:none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.card:hover .pop,
+.card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
-  .popup {
-    display: none;
-    position: absolute;
-    top: calc(50% - 20px); /* アイコンの1/3あたりに表示 */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    gap: 5px;
-  }
+/* ボタン（太字・指定色） */
+.pill{
+  display:inline-block; min-width:62px; padding:.36rem .66rem;
+  border-radius:999px; line-height:1; border:1px solid var(--accent);
+  color:var(--accent); background:#fff; text-decoration:none;
+  font-size:.92rem; font-weight:700; white-space:nowrap;
+  box-shadow:0 2px 0 rgba(103,167,186,.08);
+  transition:background .12s, transform .06s;
+}
+.pill:hover{ background:rgba(103,167,186,.12) }
+.pill:active{ transform:translateY(1px) }
 
-  .popup button {
-    background: #fff;
-    border: 2px solid #aee0ef;
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 0.85em;
-    cursor: pointer;
-    font-weight: bold; /* 太文字 */
-  }
+/* 名前（アイコンに近づける） */
+.name{ margin: 18px 0 4px; font-weight:700; font-size:1.00rem; }
+.name a{ color:#111; text-decoration:none; }
+.name a:focus-visible{ outline:2px solid var(--accent) }
 
-  .card:hover .popup {
-    display: flex;
-  }
-
-  .name {
-    margin: 15px 0;
-    font-weight: bold;
-  }
+/* footer */
+footer{margin:22px 0 0; color:#666; font-size:.9rem}
 </style>
 </head>
 <body>
 
-<img src="logo.png" alt="雲隠深情" class="logo">
+<header>
+  <img src="./assets/title.jpg" alt="雲隠深情">
+</header>
 
-<p class="counter">あなたは<span id="visitor-count">000000</span>人目の姑蘇藍氏の先輩</p>
-<p class="description">
-お名前＝X、ポップアップのボタン＝作品・感想<br>
-よければ各作家さんに感想をお願いします。<br>
-作品一覧
+<p class="counter">
+  あなたは <strong class="num" id="visitor">000000</strong> 人目の姑蘇藍氏の先輩
 </p>
+<p class="lead">お名前＝X、ポップアップのボタン＝作品・感想</p>
+<p class="lead">良ければ各作家さんに感想をお願いします。</p>
 
-<div class="grid-container">
-  <div class="card">
-    <div class="icon">
-      <img src="sample1.jpg" alt="EastBud">
-      <div class="popup">
-        <button>作品</button>
-        <button>感想</button>
-      </div>
-    </div>
-    <div class="name">EastBud</div>
-  </div>
-  <!-- 以降カード繰り返し -->
-</div>
+<h1 class="section-title">作品一覧</h1>
+
+<p id="notice" class="notice"></p>
+
+<div class="wrap"><section id="gallery" class="gallery" aria-live="polite"></section></div>
+
+<footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-  // 訪問者カウンター (localStorageで同一表示にする簡易版)
-  let count = localStorage.getItem('visitorCount');
-  if (!count) {
-    count = Math.floor(Math.random() * 99999) + 1;
-    localStorage.setItem('visitorCount', count);
-  }
-  document.getElementById('visitor-count').textContent = count.toString().padStart(6, '0');
-</script>
+/* ====== 設定 ====== */
+const CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
+/* ====== CSV ローダ ====== */
+async function loadCSV(url){
+  const res  = await fetch(url, {cache:'no-store'});
+  const text = await res.text();
+  const lines = text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
+  if(!lines.length) return [];
+
+  const expected = ["アイコン","名前","ツイッター","作品","感想"];
+  const rawHeader = lines[0].split(',').map(s=>s.trim());
+  let header = rawHeader;
+  if (rawHeader.join('/') !== expected.join('/')) {
+    header = expected;
+    const n = document.getElementById('notice');
+    n.style.display = 'block';
+    n.textContent = "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
+  }
+
+  return lines.slice(1).map(line=>{
+    const cols = line.split(',').map(s=>s.trim());
+    const obj = {};
+    header.forEach((h,i)=> obj[h] = (cols[i]||"").trim());
+    return obj;
+  });
+}
+
+/* ====== カード ====== */
+function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const iconWrap = document.createElement('div');
+  iconWrap.className = 'icon-wrap';
+  const img = document.createElement('img');
+  img.className = 'icon';
+  img.alt = `${名前} のアイコン`;
+  img.src = `./icons/${アイコン}`;
+  iconWrap.appendChild(img);
+  card.appendChild(iconWrap);
+
+  const pop = document.createElement('div');
+  pop.className = 'pop';
+  const toWork = document.createElement('a');
+  toWork.className = 'pill';
+  toWork.href   = 作品 || '#';
+  toWork.target = '_blank';
+  toWork.rel    = 'noopener';
+  toWork.textContent = '作品';
+  const toFb = document.createElement('a');
+  toFb.className = 'pill';
+  toFb.href   = 感想 || '#';
+  toFb.target = '_blank';
+  toFb.rel    = 'noopener';
+  toFb.textContent = '感想';
+  pop.appendChild(toWork); pop.appendChild(toFb);
+  card.appendChild(pop);
+
+  const name = document.createElement('div');
+  name.className = 'name';
+  const tw = document.createElement('a');
+  tw.href = ツイッター || '#';
+  tw.target = '_blank';
+  tw.rel = 'noopener';
+  tw.textContent = 名前 || '';
+  name.appendChild(tw);
+  card.appendChild(name);
+
+  /* モバイル：タップで開閉（PCは hover） */
+  iconWrap.addEventListener('click', (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    card.classList.toggle('pop-open');
+  });
+  iconWrap.tabIndex = 0;
+  iconWrap.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter' || e.key===' '){
+      e.preventDefault(); card.classList.toggle('pop-open');
+    }
+  });
+  document.addEventListener('click', (e)=>{
+    if(!card.contains(e.target)) card.classList.remove('pop-open');
+  });
+
+  return card;
+}
+
+/* ====== カウンター（端末に依存しない固定表示） ======
+   「CSVの人数 + BASE」を 6 桁ゼロ詰めで表示。
+   端末や再読込で変わらず、PC/スマホ同じ数字になります。 */
+const COUNTER_BASE = 70; // お好みで
+
+/* ====== init ====== */
+(async ()=>{
+  try{
+    const rows = await loadCSV(CSV_URL);
+
+    // カード描画（先頭 32 件 = 4×8）
+    const gallery = document.getElementById('gallery');
+    gallery.innerHTML = '';
+    rows.slice(0,32).forEach(r => gallery.appendChild(makeCard(r)));
+
+    // カウンターを端末に依存しない値で表示
+    const count = COUNTER_BASE + Math.min(32, rows.length);
+    document.getElementById('visitor').textContent = String(count).padStart(6,'0');
+  }catch(err){
+    console.error(err);
+    const n = document.getElementById('notice');
+    n.style.display = 'block';
+    n.textContent = 'CSVの読み込みに失敗しました。時間をおいて再読み込みしてください。';
+  }
+})();
+</script>
 </body>
 </html>
-
