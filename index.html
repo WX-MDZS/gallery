@@ -10,21 +10,18 @@
   --shadow: 0 10px 24px rgba(0,0,0,.08);
   --shadow-hover: 0 18px 36px rgba(0,0,0,.14);
   --icon-size: 108px;
-  --card-w: 200px;     /* カード幅 */
-  --gap-x: 14px;       /* 列間 */
-  --gap-y: 12px;       /* 行間 */
+  --card-w: 200px;
+  --gap-x: 14px;
+  --gap-y: 12px;
 }
 
-/* base */
 *{box-sizing:border-box}
 html,body{background:#fff;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif}
 body{margin:0;padding:0 0 52px;text-align:center}
 
-/* header */
 header{padding:22px 10px 8px}
 header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
-/* 見出し */
 .counter{
   margin: 8px auto 6px;
   width:min(920px,92vw);
@@ -32,46 +29,33 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   font-size: clamp(22px, 3.0vw, 32px);
 }
 .counter .num{letter-spacing:.06em}
-.desc{margin: 2px 0 16px; font-size:.95rem; color:#555;}
+.desc{margin: 2px 0 8px; font-size:.95rem; color:#555;}
 .section-title{
   margin: 20px 0 28px;
   font-size: clamp(18px, 2.2vw, 24px);
   font-weight:800;
 }
 
-/* 注意表示 */
 .notice{
   background:#fff9e6;border:1px solid #f2e2b6;color:#7a5a00;
   width:min(1000px,92vw);margin:0 auto 16px;padding:12px 14px;
   border-radius:12px;text-align:left;
 }
 
-/* ===== Grid ===== */
 .gallery{
   width:min(1100px,96vw);
   margin:0 auto;
   display:grid;
-  grid-template-columns: repeat(4, var(--card-w)); /* PC 4列固定 */
+  grid-template-columns: repeat(4, var(--card-w));
   justify-content:center;
   column-gap: var(--gap-x);
   row-gap: var(--gap-y);
-  min-width: calc(var(--card-w) * 2 + var(--gap-x)); /* 2列未満に落ちない保険 */
-  overflow-x:auto;
-}
-@media (max-width:1100px){
-  .gallery{ grid-template-columns: repeat(3, var(--card-w)); }
+  min-width: calc(var(--card-w) * 4 + var(--gap-x) * 3);
 }
 @media (max-width:860px){
   .gallery{ grid-template-columns: repeat(2, var(--card-w)); }
 }
-@media (max-width:560px){
-  :root{ --card-w: 188px; --icon-size: 102px; --gap-x: 12px; --gap-y: 10px; }
-}
-@media (max-width:420px){
-  :root{ --card-w: 176px; --icon-size: 96px; --gap-x: 12px; --gap-y: 10px; }
-}
 
-/* card */
 .card{
   position:relative;
   background:#fff;
@@ -80,14 +64,9 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   padding: 10px 8px 10px;
   box-shadow: var(--shadow);
   transition: box-shadow .2s ease, transform .2s ease;
-  /* ↓ ホバー/開状態のポップアップを隣のカードより前に出す土台 */
-  z-index: 0;
 }
 .card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-.card:hover,
-.card.pop-open{ z-index: 50; }   /* ← 前面へ */
 
-/* icon */
 .icon-wrap{
   width: var(--icon-size);
   height: var(--icon-size);
@@ -104,8 +83,6 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .icon-wrap:hover{ filter: saturate(1.04) }
 .icon{width:100%;height:100%;object-fit:cover;display:block}
 
-/* ===== ポップアップ =====
-   アイコンの“下1/3”に軽く重ねる。 */
 .pop{
   display:flex;
   flex-direction: row !important;
@@ -114,25 +91,21 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   align-items:center;
   position:absolute;
   left:50%;
-  /* アイコン位置（カード上辺から）に合わせて計算配置 */
-  top: calc(10px + var(--icon-size) * 0.68);
+  top: calc(var(--icon-size) * 0.68);
   transform: translate(-50%, -30%);
   padding:6px 8px;
   border-radius:12px;
   background:#fff;
   border:1px solid rgba(0,0,0,.08);
   box-shadow:0 10px 24px rgba(0,0,0,.14);
-  /* ↓ どの要素よりも前に出す */
-  z-index: 1000;
+  z-index:10;
   opacity:0;
   pointer-events:none;
   transition: opacity .18s ease, transform .18s ease;
 }
-/* 表示トリガー：カード全体の hover/tap */
 .card:hover .pop,
 .card.pop-open .pop{ opacity:1; pointer-events:auto; }
 
-/* 太字ボタン */
 .pill{
   display:inline-block;
   min-width:62px;
@@ -152,7 +125,6 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .pill:hover{ background:rgba(103,167,186,.12) }
 .pill:active{ transform:translateY(1px) }
 
-/* 名前（アイコンに近づけ） */
 .name{
   margin: 18px 0 2px;
   font-weight:700;
@@ -161,7 +133,6 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 .name a{ color:#111; text-decoration:none; }
 .name a:focus-visible{ outline:2px solid var(--accent) }
 
-/* footer */
 footer{margin:22px 0 0; color:#666; font-size:.9rem}
 </style>
 </head>
@@ -175,8 +146,8 @@ footer{margin:22px 0 0; color:#666; font-size:.9rem}
   あなたは<strong class="num" id="visitor">000000</strong>人目の姑蘇藍氏の先輩
 </p>
 <p class="desc">お名前＝X、ポップアップのボタン＝作品・感想</p>
-
-<h1 class="section-title">作品一覧</h1>
+<p class="desc">良ければ各作家さんに感想をお願いします。</p>
+<p class="section-title">作品一覧</p>
 
 <p id="notice" class="notice" style="display:none"></p>
 
@@ -185,21 +156,36 @@ footer{margin:22px 0 0; color:#666; font-size:.9rem}
 <footer>雲隠探情企画 / 主催はくと</footer>
 
 <script>
-/* ===== CSV ===== */
+/* ===== CSV URL ===== */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
-/* 訪問カウンター */
-(() => {
-  try{
-    const el = document.getElementById('visitor');
-    let n = Number(localStorage.getItem('mdzs_counter')||0) + 1;
-    localStorage.setItem('mdzs_counter', n);
-    el.textContent = String(n).padStart(6,'0');
-  }catch(_){}
+/* ===== 共通カウンター (GAS) ===== */
+(async () => {
+  const el = document.getElementById('visitor');
+  const GAS_URL = 'https://script.google.com/macros/s/XXXXXXXXXXXX/exec'; // ← デプロイURLに置き換え
+
+  try {
+    const keyDate = 'mdzs_srv_last_date';
+    const keyCache = 'mdzs_srv_last_count';
+    const today = new Date().toDateString();
+
+    if (localStorage.getItem(keyDate) !== today) {
+      const res = await fetch(GAS_URL, { cache: 'no-store' });
+      const data = await res.json();
+      const countStr = String(data.count).padStart(6,'0');
+      localStorage.setItem(keyDate, today);
+      localStorage.setItem(keyCache, countStr);
+      el.textContent = countStr;
+    } else {
+      el.textContent = localStorage.getItem(keyCache) || '000000';
+    }
+  } catch (e) {
+    el.textContent = localStorage.getItem('mdzs_srv_last_count') || '000000';
+  }
 })();
 
-/* CSV 読み込み */
+/* ===== CSV 読み込み ===== */
 async function loadCSV(url){
   const res = await fetch(url, {cache:'no-store'});
   const text = await res.text();
@@ -210,14 +196,9 @@ async function loadCSV(url){
   let header = rawHeader;
   let headerOK = expected.every((h,i)=>rawHeader[i]===h);
   if(!headerOK){
-    const joined = rawHeader.join('/');
-    if(joined !== expected.join('/')){
-      header = expected;
-      const n = document.getElementById('notice');
-      n.style.display = 'block';
-      n.textContent =
-        "CSVの見出しが判定できなかったため、列の並び（アイコン/名前/ツイッター/作品/感想）で推測して読み込みました。見出しを付け直すとより安全です。";
-    }
+    const n = document.getElementById('notice');
+    n.style.display = 'block';
+    n.textContent = "CSVの見出しが判定できなかったため、推測して読み込みました。";
   }
   const rows = lines.slice(1).map(line=>{
     const cols = line.split(',').map(s=>s.trim());
@@ -228,7 +209,7 @@ async function loadCSV(url){
   return rows;
 }
 
-/* カード生成 */
+/* ===== カード生成 ===== */
 function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   const card = document.createElement('div');
   card.className = 'card';
@@ -273,7 +254,6 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   name.appendChild(tw);
   card.appendChild(name);
 
-  /* モバイル：タップで開閉（カード全体） */
   iconWrap.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -293,19 +273,18 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   return card;
 }
 
-/* init */
+/* ===== init ===== */
 (async ()=>{
   try{
     const rows = await loadCSV(CSV_URL);
     const wrap = document.getElementById('gallery');
     wrap.innerHTML = '';
-    /* 32件＝4×8 */
     rows.slice(0,32).forEach(r => wrap.appendChild(makeCard(r)));
   }catch(err){
     console.error(err);
     const n = document.getElementById('notice');
     n.style.display = 'block';
-    n.textContent = 'CSVの読み込みに失敗しました。時間をおいて再読み込みしてください。';
+    n.textContent = 'CSVの読み込みに失敗しました。';
   }
 })();
 </script>
