@@ -180,7 +180,7 @@ const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
 /* 表示だけ固定したい場合は 6 桁文字列。固定しないなら null */
-const COUNTER_FIXED = '000078';
+const COUNTER_FIXED = null;
 
 /* ===== CSV ロード ===== */
 async function loadCSV(url){
@@ -274,6 +274,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
 </script>
 </body>
 </html>
+
 
 
 
