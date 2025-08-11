@@ -116,7 +116,7 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 /* ボタン */
 .pill{
   display:inline-block; min-width:62px; padding:.36rem .66rem;
-  border-radius:999px; line-height:1; border:1px solid var(--accent);
+  border-radius:999px; line-height:1; border:1px solid --accent;
   color:var(--accent); background:#fff; text-decoration:none;
   font-size:.92rem; font-weight:700; white-space:nowrap;
   box-shadow:0 2px 0 rgba(103,167,186,.08);
@@ -161,8 +161,9 @@ footer{margin:28px 0 0; color:#666; font-size:.9rem}
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
-/* ★ここをあなたのGAS WebアプリURLに差し替え（…/exec） */
-const COUNTER_API = "https://script.google.com/macros/s/AKfycbz35nY5Tzj9iDhbo2plu22gl8PjSmaIFjCPoUt6ONAaPmozL6kn9cEXkhsCJOIfnrGd/exec";
+/* あなたのGAS WebアプリURL（/exec で終わるもの） */
+const COUNTER_API =
+  "https://script.google.com/macros/s/AKfycbz35nY5Tzj9iDhbo2plu22gl8PjSmaIFjCPoUt6ONAaPmozL6kn9cEXkhsCJOIfnrGd/exec";
 
 /* 固定表示したい場合は6桁文字列。動的なら null のまま */
 const COUNTER_FIXED = null;
@@ -231,33 +232,40 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   return card;
 }
 
-/* ===== カウンター（GAS API使用・毎回+1） ===== */
+/* ===== カウンター（JSONP 方式） ===== */
 function setCountText(n){
   document.getElementById('visitor').textContent = String(n).padStart(6,'0');
 }
 
-async function fetchCounter(method='GET'){
-  const res = await fetch(COUNTER_API, { method, mode:'cors' });
-  const data = await res.json();
-  if (data && typeof data.count === 'number') setCountText(data.count);
-  return data;
+// JSONP ヘルパー
+function jsonp(url){
+  return new Promise((resolve, reject) => {
+    const cb = `cb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    window[cb] = (data) => { resolve(data); cleanup(); };
+    const s = document.createElement('script');
+    s.src = `${url}${url.includes('?') ? '&' : '?'}callback=${cb}`;
+    s.onerror = () => { reject(new Error('JSONP failed')); cleanup(); };
+    document.head.appendChild(s);
+    function cleanup(){ try{ delete window[cb]; s.remove(); }catch(_){} }
+  });
 }
 
 async function updateCounterWithAPI(csvRows){
-  // 固定表示が指定されていればそれを最優先
+  // 固定表示が指定されていれば最優先
   if (COUNTER_FIXED && /^\d{6}$/.test(COUNTER_FIXED)) {
-    document.getElementById('visitor').textContent = COUNTER_FIXED;
+    setCountText(Number(COUNTER_FIXED));
     return;
   }
   try{
     // 現在値を表示
-    await fetchCounter('GET');
-    // すぐに +1（アクセス毎に加算）
-    await fetchCounter('POST');
+    const cur = await jsonp(`${COUNTER_API}?action=get`);
+    if (cur && typeof cur.count === 'number') setCountText(cur.count);
+    // その場で +1
+    const next = await jsonp(`${COUNTER_API}?action=hit`);
+    if (next && typeof next.count === 'number') setCountText(next.count);
   }catch(_){
-    // API失敗時はフォールバック：CSV件数を表示
-    const count = csvRows.length;
-    setCountText(count);
+    // 失敗したら CSV 件数にフォールバック
+    setCountText(csvRows.length);
   }
 }
 
@@ -271,7 +279,7 @@ async function updateCounterWithAPI(csvRows){
     gallery.innerHTML = '';
     rows.slice(0,32).forEach(r => gallery.appendChild(makeCard(r)));
 
-    // カウンター更新（API + フォールバック）
+    // カウンター更新
     await updateCounterWithAPI(rows);
   }catch(err){
     console.error(err);
@@ -283,6 +291,3 @@ async function updateCounterWithAPI(csvRows){
 </script>
 </body>
 </html>
-
-
-
