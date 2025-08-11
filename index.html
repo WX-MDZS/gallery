@@ -251,17 +251,17 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   try{
     const rows = await loadCSV(CSV_URL);
 
-    // カード描画（4×8 = 32）
+    // カード描画（表示は最大 32 枚）
     const gallery = document.getElementById('gallery');
     gallery.innerHTML = '';
     rows.slice(0,32).forEach(r => gallery.appendChild(makeCard(r)));
 
-    // カウンター：固定表示 or 自動計算
+    // カウンター：固定表示 or 自動計算（←ここを rows.length に）
     const el = document.getElementById('visitor');
     if (COUNTER_FIXED && /^\d{6}$/.test(COUNTER_FIXED)) {
       el.textContent = COUNTER_FIXED;
     } else {
-      const count = Math.min(32, rows.length);
+      const count = rows.length;               // ★ CSVの全行数で動的に表示
       el.textContent = String(count).padStart(6,'0');
     }
   }catch(err){
@@ -274,7 +274,3 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
 </script>
 </body>
 </html>
-
-
-
-
