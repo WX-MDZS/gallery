@@ -63,10 +63,10 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
   box-sizing: content-box;
 
   /* スクロールバー非表示（各ブラウザ） */
-  -ms-overflow-style: none;     /* IE, Edge(旧) */
-  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
-.wrap::-webkit-scrollbar{ display:none }  /* Chrome, Safari */
+.wrap::-webkit-scrollbar{ display:none }
 
 .gallery{
   display:grid;
@@ -78,8 +78,8 @@ header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 @media (max-width: 860px) and (pointer: coarse){
   .wrap{
     width: min(480px, 96vw);
-    overflow-x: hidden;        /* スマホは横スクロール自体なし */
-    padding: 0 16px 48px;      /* 影用の余白はキープ */
+    overflow-x: hidden;
+    padding: 0 16px 48px;
   }
   .gallery{ grid-template-columns: repeat(2, 1fr); gap: 16px; }
   :root{ --icon-size: 104px; }
@@ -161,7 +161,7 @@ footer{margin:28px 0 0; color:#666; font-size:.9rem}
 <p class="counter">
   あなたは<strong class="num" id="visitor">000000</strong>人目の姑蘇藍氏の先輩
 </p>
-<p class="lead">お名前＝X、ポップアップボタン＝作品・感想</p>
+<p class="lead">お名前＝X、ポップアップのボタン＝作品・感想</p>
 <p class="lead">ぜひ各作家さんに感想をお願いします。</p>
 
 <h1 class="section-title">エピソード一覧</h1>
@@ -178,6 +178,9 @@ footer{margin:28px 0 0; color:#666; font-size:.9rem}
 /* ===== 設定 ===== */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
+
+/* カウンターAPI（GAS WebアプリURLに差し替え） */
+const COUNTER_API = "https://script.google.com/macros/s/~~~~YOUR_DEPLOYED_EXEC_URL~~~~/exec";
 
 /* 表示だけ固定したい場合は 6 桁文字列。固定しないなら null */
 const COUNTER_FIXED = null;
@@ -246,24 +249,58 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   return card;
 }
 
+/* ===== カウンター（GAS API 使用） ===== */
+function setCountText(n){
+  document.getElementById('visitor').textContent = String(n).padStart(6,'0');
+}
+
+async function fetchCounter(method='GET'){
+  const res = await fetch(COUNTER_API, { method, mode:'cors' });
+  const data = await res.json();
+  if (data && typeof data.count === 'number') setCountText(data.count);
+  return data;
+}
+
+async function updateCounterWithAPI(csvRows){
+  // 固定表示指定があれば最優先
+  if (COUNTER_FIXED && /^\d{6}$/.test(COUNTER_FIXED)) {
+    setCountText(Number(COUNTER_FIXED));
+    return;
+  }
+
+  const VISIT_KEY = 'mdzs_visit_24h';
+  const last = Number(localStorage.getItem(VISIT_KEY) || 0);
+  const now  = Date.now();
+  const oneDay = 24*60*60*1000;
+
+  try{
+    // まず現在値をGETして即表示
+    await fetchCounter('GET');
+
+    // 24時間以上あいていれば +1
+    if (!last || now - last > oneDay) {
+      await fetchCounter('POST');
+      localStorage.setItem(VISIT_KEY, String(now));
+    }
+  }catch(_){
+    // API失敗時はフォールバック：CSV件数を表示
+    const count = csvRows.length;       // ←必要なら Math.min(32, csvRows.length) に戻せる
+    setCountText(count);
+  }
+}
+
 /* ===== init ===== */
 (async ()=>{
   try{
     const rows = await loadCSV(CSV_URL);
 
-    // カード描画（表示は最大 32 枚）
+    // カード描画（4×8 = 32 件まで）
     const gallery = document.getElementById('gallery');
     gallery.innerHTML = '';
     rows.slice(0,32).forEach(r => gallery.appendChild(makeCard(r)));
 
-    // カウンター：固定表示 or 自動計算（←ここを rows.length に）
-    const el = document.getElementById('visitor');
-    if (COUNTER_FIXED && /^\d{6}$/.test(COUNTER_FIXED)) {
-      el.textContent = COUNTER_FIXED;
-    } else {
-      const count = rows.length;               // ★ CSVの全行数で動的に表示
-      el.textContent = String(count).padStart(6,'0');
-    }
+    // カウンター更新（GAS API + フォールバック）
+    await updateCounterWithAPI(rows);
   }catch(err){
     console.error(err);
     const n = document.getElementById('notice');
@@ -274,4 +311,3 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
 </script>
 </body>
 </html>
-
