@@ -142,7 +142,7 @@ footer{margin:28px 0 0; color:#666; font-size:.9rem}
 <script>
 /* ===== 設定 ===== */
 const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr109OBcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvXvbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
 
 /* あなたの JSONP カウンターAPI（/exec） */
 const COUNTER_API = "https://script.google.com/macros/s/AKfycbyp1U_pWMvHR9b1OaDkeA4WlAsfXK5uJoTyJLkDowRphl9CTruVkVYSi1iJ2ewrubr9/exec";
@@ -150,11 +150,20 @@ const COUNTER_API = "https://script.google.com/macros/s/AKfycbyp1U_pWMvHR9b1OaDk
 /* 固定表示したい時は6桁文字列、動的なら null */
 const COUNTER_FIXED = null;
 
-/* ===== CSV 読み込み（"..." と表記ゆれに対応） ===== */
+/* ===== CSV 読み込み（ネットワーク失敗検知＋"..." と表記ゆれ対応） ===== */
 async function loadCSV(url){
   const res = await fetch(url, {cache:'no-store'});
+  if (!res.ok) {
+    console.error('CSV fetch failed:', res.status, res.url);
+    const n = document.getElementById('notice');
+    n.style.display = 'block';
+    n.textContent = 'CSVの取得に失敗しました（' + res.status + '）。URL/公開設定をご確認ください。';
+    return [];
+  }
+
   const text = (await res.text()).replace(/^\uFEFF/,'').trim();
   if(!text) return [];
+
   const lines = text.split(/\r?\n/);
 
   // 「"..." 内のカンマは無視」して分割
@@ -167,7 +176,7 @@ async function loadCSV(url){
 
   // 1行目のヘッダー取得
   const rawHeader = lines[0].split(CSV_SPLIT).map(stripQuotes);
-  console.info('[CSV header]', rawHeader); // ←デバッグ出力
+  console.info('[CSV header]', rawHeader);
 
   // ヘッダー正規化
   const norm = (s) => s
@@ -176,20 +185,15 @@ async function loadCSV(url){
     .replace(/－/g,'-')
     .toLowerCase();
 
-  // 別名・ゆれ対応のキー推定
+  // 別名・表記ゆれ対応
   const guessKey = (name) => {
     const n = norm(name);
     if (!n) return null;
-    // アイコン
     if (/(^icon$|^アイコン$|画像|iconurl)/.test(n)) return 'アイコン';
-    // 名前
     if (/(^名前$|氏名|name|おなまえ|作者名|ハンドルネーム)/.test(n)) return '名前';
-    // X/Twitter（← X 単独も対応）
     if (/^(x|Ｘ)$/.test(n)) return 'ツイッター';
     if (/(ツイ|twitter|x旧?twitter?|xリンク|xurl|xid|xアカウント|xユーザー|xhandle|xprofile)/.test(n)) return 'ツイッター';
-    // 作品URL
     if (/(^作品$|作?品url?$|作品リンク|投稿|work|link)/.test(n)) return '作品';
-    // 感想URL/コメント
     if (/(^感想$|コメント|コメ|feedback|review|感想url?$|感想リンク)/.test(n)) return '感想';
     return null;
   };
@@ -209,7 +213,6 @@ async function loadCSV(url){
     const n = document.getElementById('notice');
     n.style.display = 'block';
     n.textContent = "CSVの見出しが想定と異なるため、名称から推測して読み込みました。ヘッダー（アイコン/名前/X/作品/感想）に直すとより安全です。";
-    // フォールバック（列順 0..4）
     need.forEach((k, idx) => { if (!(k in headerMap)) headerMap[k] = idx; });
   }
 
@@ -220,11 +223,11 @@ async function loadCSV(url){
     if (!line || !line.trim()) continue;
     const cols = line.split(CSV_SPLIT).map(stripQuotes);
     rows.push({
-      アイコン: cols[headerMap['アイコン']] || '',
-      名前:     cols[headerMap['名前']] || '',
+      アイコン:   cols[headerMap['アイコン']]   || '',
+      名前:       cols[headerMap['名前']]       || '',
       ツイッター: cols[headerMap['ツイッター']] || '',
-      作品:     cols[headerMap['作品']] || '',
-      感想:     cols[headerMap['感想']] || '',
+      作品:       cols[headerMap['作品']]       || '',
+      感想:       cols[headerMap['感想']]       || '',
     });
   }
   return rows;
@@ -245,7 +248,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   card.appendChild(iconWrap);
 
   const pop = document.createElement('div');
-  pop.className = 'pop';
+  pop className = 'pop';
   const a1 = document.createElement('a');
   a1.className = 'pill'; a1.href = 作品 || '#'; a1.target = '_blank'; a1.rel = 'noopener'; a1.textContent = '作品';
   const a2 = document.createElement('a');
