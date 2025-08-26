@@ -248,7 +248,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   card.appendChild(iconWrap);
 
   const pop = document.createElement('div');
-  pop className = 'pop';
+  pop.className = 'pop';  /* ← 修正ポイント */
   const a1 = document.createElement('a');
   a1.className = 'pill'; a1.href = 作品 || '#'; a1.target = '_blank'; a1.rel = 'noopener'; a1.textContent = '作品';
   const a2 = document.createElement('a');
