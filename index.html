@@ -167,22 +167,30 @@ async function loadCSV(url){
 
   // 1行目のヘッダー取得
   const rawHeader = lines[0].split(CSV_SPLIT).map(stripQuotes);
+  console.info('[CSV header]', rawHeader); // ←デバッグ出力
 
-  // ヘッダー正規化（全角/半角空白除去・小文字化）
+  // ヘッダー正規化
   const norm = (s) => s
     .replace(/\s+/g, '')
-    .replace(/[（）\(\)]/g, '')    // 括弧除去
+    .replace(/[（）\(\)]/g, '')
     .replace(/－/g,'-')
     .toLowerCase();
 
   // 別名・ゆれ対応のキー推定
   const guessKey = (name) => {
     const n = norm(name);
-    if (/(icon|アイコン|画像|iconurl)/.test(n)) return 'アイコン';
-    if (/(名前|氏名|name|おなまえ)/.test(n)) return '名前';
-    if (/(ツイ|twitter|x旧?twitter?|xリンク|xurl|xid)/.test(n)) return 'ツイッター';
-    if (/(作品|作?品url?|link|作品リンク|投稿|work)/.test(n)) return '作品';
-    if (/(感想|コメント|コメ|feedback|review|感想url?)/.test(n)) return '感想';
+    if (!n) return null;
+    // アイコン
+    if (/(^icon$|^アイコン$|画像|iconurl)/.test(n)) return 'アイコン';
+    // 名前
+    if (/(^名前$|氏名|name|おなまえ|作者名|ハンドルネーム)/.test(n)) return '名前';
+    // X/Twitter（← X 単独も対応）
+    if (/^(x|Ｘ)$/.test(n)) return 'ツイッター';
+    if (/(ツイ|twitter|x旧?twitter?|xリンク|xurl|xid|xアカウント|xユーザー|xhandle|xprofile)/.test(n)) return 'ツイッター';
+    // 作品URL
+    if (/(^作品$|作?品url?$|作品リンク|投稿|work|link)/.test(n)) return '作品';
+    // 感想URL/コメント
+    if (/(^感想$|コメント|コメ|feedback|review|感想url?$|感想リンク)/.test(n)) return '感想';
     return null;
   };
 
@@ -193,20 +201,16 @@ async function loadCSV(url){
     if (key && !(key in headerMap)) headerMap[key] = i;
   });
 
-  const haveAll =
-    ['アイコン','名前','ツイッター','作品','感想'].every(k => k in headerMap);
+  const need = ['アイコン','名前','ツイッター','作品','感想'];
+  const haveAll = need.every(k => k in headerMap);
 
-  // 警告表示の条件を緩める：推定で全キー拾えたら警告なし
+  // 足りなければ列並びで補完しつつ警告
   if (!haveAll) {
     const n = document.getElementById('notice');
     n.style.display = 'block';
-    n.textContent = "CSVの見出しが想定と異なるため、名称から推測して読み込みました。ヘッダー（アイコン/名前/ツイッター/X/作品/感想）に直すとより安全です。";
-    // 列並びでのフォールバック
-    headerMap['アイコン'] = headerMap['アイコン'] ?? 0;
-    headerMap['名前'] = headerMap['名前'] ?? 1;
-    headerMap['ツイッター'] = headerMap['ツイッター'] ?? 2;
-    headerMap['作品'] = headerMap['作品'] ?? 3;
-    headerMap['感想'] = headerMap['感想'] ?? 4;
+    n.textContent = "CSVの見出しが想定と異なるため、名称から推測して読み込みました。ヘッダー（アイコン/名前/X/作品/感想）に直すとより安全です。";
+    // フォールバック（列順 0..4）
+    need.forEach((k, idx) => { if (!(k in headerMap)) headerMap[k] = idx; });
   }
 
   // データ行のパース
