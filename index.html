@@ -142,8 +142,7 @@ footer{margin:28px 0 0; color:#666; font-size:.9rem}
 <script>
 /* ===== 設定 ===== */
 const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
-// ↑ ここに「枠」シートをCSV公開したURLを貼ってください
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
 
 /* あなたの JSONP カウンターAPI（/exec） */
 const COUNTER_API = "https://script.google.com/macros/s/AKfycbyp1U_pWMvHR9b1OaDkeA4WlAsfXK5uJoTyJLkDowRphl9CTruVkVYSi1iJ2ewrubr9/exec";
@@ -176,6 +175,7 @@ async function loadCSV(url){
   const rawHeader = lines[0].split(CSV_SPLIT).map(stripQuotes);
   console.info('[CSV header]', rawHeader);
 
+  // 列順が「アイコン/名前/ツイッター/作品/感想」で来る前提（スプレッドシートの並びと一致）
   const headerMap = {アイコン:0, 名前:1, ツイッター:2, 作品:3, 感想:4};
 
   const rows = [];
@@ -261,7 +261,7 @@ async function updateCounter(rows){
     const hitData = await jsonp(`${COUNTER_API}?action=hit`);
     if (hitData && typeof hitData.count === 'number') setCountText(hitData.count);
   }catch(_){
-    setCountText(rows.length);
+    setCountText(rows.length); // フォールバック
   }
 }
 
