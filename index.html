@@ -142,7 +142,8 @@ footer{margin:28px 0 0; color:#666; font-size:.9rem}
 <script>
 /* ===== 設定 ===== */
 const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr109OBcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvXvbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?output=csv";
+// ↑ ここに「枠」シートをCSV公開したURLを貼ってください
 
 /* あなたの JSONP カウンターAPI（/exec） */
 const COUNTER_API = "https://script.google.com/macros/s/AKfycbyp1U_pWMvHR9b1OaDkeA4WlAsfXK5uJoTyJLkDowRphl9CTruVkVYSi1iJ2ewrubr9/exec";
@@ -150,7 +151,7 @@ const COUNTER_API = "https://script.google.com/macros/s/AKfycbyp1U_pWMvHR9b1OaDk
 /* 固定表示したい時は6桁文字列、動的なら null */
 const COUNTER_FIXED = null;
 
-/* ===== CSV 読み込み（ネットワーク失敗検知＋"..." と表記ゆれ対応） ===== */
+/* ===== CSV 読み込み ===== */
 async function loadCSV(url){
   const res = await fetch(url, {cache:'no-store'});
   if (!res.ok) {
@@ -165,8 +166,6 @@ async function loadCSV(url){
   if(!text) return [];
 
   const lines = text.split(/\r?\n/);
-
-  // 「"..." 内のカンマは無視」して分割
   const CSV_SPLIT = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
   const stripQuotes = (s) => {
     const t = s.trim();
@@ -174,49 +173,11 @@ async function loadCSV(url){
     return t;
   };
 
-  // 1行目のヘッダー取得
   const rawHeader = lines[0].split(CSV_SPLIT).map(stripQuotes);
   console.info('[CSV header]', rawHeader);
 
-  // ヘッダー正規化
-  const norm = (s) => s
-    .replace(/\s+/g, '')
-    .replace(/[（）\(\)]/g, '')
-    .replace(/－/g,'-')
-    .toLowerCase();
+  const headerMap = {アイコン:0, 名前:1, ツイッター:2, 作品:3, 感想:4};
 
-  // 別名・表記ゆれ対応
-  const guessKey = (name) => {
-    const n = norm(name);
-    if (!n) return null;
-    if (/(^icon$|^アイコン$|画像|iconurl)/.test(n)) return 'アイコン';
-    if (/(^名前$|氏名|name|おなまえ|作者名|ハンドルネーム)/.test(n)) return '名前';
-    if (/^(x|Ｘ)$/.test(n)) return 'ツイッター';
-    if (/(ツイ|twitter|x旧?twitter?|xリンク|xurl|xid|xアカウント|xユーザー|xhandle|xprofile)/.test(n)) return 'ツイッター';
-    if (/(^作品$|作?品url?$|作品リンク|投稿|work|link)/.test(n)) return '作品';
-    if (/(^感想$|コメント|コメ|feedback|review|感想url?$|感想リンク)/.test(n)) return '感想';
-    return null;
-  };
-
-  // ヘッダー→標準キーへのマップ作成
-  const headerMap = {};
-  rawHeader.forEach((h, i) => {
-    const key = guessKey(h);
-    if (key && !(key in headerMap)) headerMap[key] = i;
-  });
-
-  const need = ['アイコン','名前','ツイッター','作品','感想'];
-  const haveAll = need.every(k => k in headerMap);
-
-  // 足りなければ列並びで補完しつつ警告
-  if (!haveAll) {
-    const n = document.getElementById('notice');
-    n.style.display = 'block';
-    n.textContent = "CSVの見出しが想定と異なるため、名称から推測して読み込みました。ヘッダー（アイコン/名前/X/作品/感想）に直すとより安全です。";
-    need.forEach((k, idx) => { if (!(k in headerMap)) headerMap[k] = idx; });
-  }
-
-  // データ行のパース
   const rows = [];
   for (let i=1; i<lines.length; i++){
     const line = lines[i];
@@ -248,7 +209,7 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   card.appendChild(iconWrap);
 
   const pop = document.createElement('div');
-  pop.className = 'pop';  /* ← 修正ポイント */
+  pop.className = 'pop';
   const a1 = document.createElement('a');
   a1.className = 'pill'; a1.href = 作品 || '#'; a1.target = '_blank'; a1.rel = 'noopener'; a1.textContent = '作品';
   const a2 = document.createElement('a');
@@ -300,7 +261,7 @@ async function updateCounter(rows){
     const hitData = await jsonp(`${COUNTER_API}?action=hit`);
     if (hitData && typeof hitData.count === 'number') setCountText(hitData.count);
   }catch(_){
-    setCountText(rows.length); // フォールバック
+    setCountText(rows.length);
   }
 }
 
