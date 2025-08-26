@@ -22,98 +22,61 @@ header{padding:22px 10px 8px}
 header img{width:min(880px,92vw);height:auto;display:block;margin:0 auto}
 
 /* 見出し/説明 */
-.counter{
-  margin: 8px auto 6px;
-  width:min(920px,92vw);
-  font-weight:900;
-  font-size: clamp(22px, 3.0vw, 32px);
-}
+.counter{ margin:8px auto 6px; width:min(920px,92vw); font-weight:900; font-size:clamp(22px,3.0vw,32px) }
 .counter .num{letter-spacing:.06em}
-.lead{margin: 4px 0 0; font-size:1.15rem; color:#555;}
-.section-title{
-  margin: 18px 0 22px;
-  font-size: clamp(20px, 2.4vw, 28px);
-  font-weight:800;
-}
+.lead{margin:4px 0 0; font-size:1.15rem; color:#555;}
+.section-title{ margin:18px 0 22px; font-size:clamp(20px,2.4vw,28px); font-weight:800; }
 .notice{
   background:#fff9e6;border:1px solid #f2e2b6;color:#7a5a00;
-  width:min(1000px,92vw);margin:0 auto 16px;padding:12px 14px;
-  border-radius:12px;text-align:left;display:none;
+  width:min(1000px,92vw);margin:0 auto 16px;padding:12px 14px;border-radius:12px;text-align:left;display:none;
 }
 
-/* ===== Grid ===== */
-.wrap{
-  --wrap-w: calc(var(--card-w)*4 + var(--gap)*3);
-  width: var(--wrap-w);
-  max-width: 100vw;
-  margin: 0 auto;
-  overflow-x: auto; overflow-y: visible;
-  padding: 0 40px 56px;
-  box-sizing: content-box;
-  -ms-overflow-style: none; scrollbar-width: none;
-}
-.wrap::-webkit-scrollbar{ display:none }
+/* Grid */
+.wrap{ --wrap-w: calc(var(--card-w)*4 + var(--gap)*3); width:var(--wrap-w); max-width:100vw; margin:0 auto;
+  overflow-x:auto; overflow-y:visible; padding:0 40px 56px; box-sizing:content-box; -ms-overflow-style:none; scrollbar-width:none; }
+.wrap::-webkit-scrollbar{display:none}
+.gallery{ display:grid; grid-template-columns:repeat(4,var(--card-w)); gap:var(--gap) }
 
-.gallery{
-  display:grid;
-  grid-template-columns: repeat(4, var(--card-w));
-  gap: var(--gap);
-}
-
-/* スマホ2列 */
-@media (max-width: 860px) and (pointer: coarse){
-  .wrap{ width: min(480px, 96vw); overflow-x: hidden; padding: 0 16px 48px; }
-  .gallery{ grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  :root{ --icon-size: 104px; }
+/* モバイル2列 */
+@media (max-width:860px) and (pointer:coarse){
+  .wrap{ width:min(480px,96vw); overflow-x:hidden; padding:0 16px 48px }
+  .gallery{ grid-template-columns:repeat(2,1fr); gap:16px }
+  :root{ --icon-size:104px }
 }
 
 /* card */
-.card{
-  position:relative;background:#fff;border-radius:16px;
-  width: var(--card-w);padding: 12px 8px 14px;
-  box-shadow: var(--shadow);
-  transition: box-shadow .2s ease, transform .2s ease;
-}
-.card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-@media (max-width: 860px) and (pointer: coarse){ .card{ width:auto; } }
+.card{ position:relative; background:#fff; border-radius:16px; width:var(--card-w); padding:12px 8px 14px;
+  box-shadow:var(--shadow); transition:box-shadow .2s, transform .2s }
+.card:hover{ box-shadow:var(--shadow-hover); transform:translateY(-2px) }
+@media (max-width:860px) and (pointer:coarse){ .card{ width:auto } }
 
 /* icon */
-.icon-wrap{
-  width: var(--icon-size);height: var(--icon-size);margin: 2px auto 6px;
-  border-radius:50%;overflow:hidden;border:4px solid rgba(103,167,186,.28);
-  outline:2px solid var(--accent);outline-offset:-6px;background:#f3f4f6;
-  position:relative;transition: filter .18s;
-}
-.icon-wrap:hover{ filter: saturate(1.04) }
-.icon{width:100%;height:100%;object-fit:cover;display:block}
+.icon-wrap{ width:var(--icon-size); height:var(--icon-size); margin:2px auto 6px; border-radius:50%; overflow:hidden;
+  border:4px solid rgba(103,167,186,.28); outline:2px solid var(--accent); outline-offset:-6px; background:#f3f4f6; position:relative; transition:filter .18s }
+.icon-wrap:hover{ filter:saturate(1.04) }
+.icon{ width:100%; height:100%; object-fit:cover; display:block }
 
 /* popup */
-.pop{
-  display:flex;gap:10px;justify-content:center;align-items:center;
-  position:absolute;left:50%;top: calc(var(--icon-size) * 0.83);
-  transform: translate(-50%, -30%);padding:6px 8px;border-radius:12px;background:#fff;
-  border:1px solid rgba(0,0,0,.08);box-shadow:0 10px 24px rgba(0,0,0,.14);
-  z-index:10;opacity:0;pointer-events:none;transition: opacity .18s ease, transform .18s ease;
-}
-.card:hover .pop,.card.pop-open .pop{ opacity:1; pointer-events:auto; }
+.pop{ display:flex; gap:10px; justify-content:center; align-items:center; position:absolute; left:50%;
+  top:calc(var(--icon-size)*0.83); transform:translate(-50%,-30%); padding:6px 8px; border-radius:12px; background:#fff;
+  border:1px solid rgba(0,0,0,.08); box-shadow:0 10px 24px rgba(0,0,0,.14); z-index:10; opacity:0; pointer-events:none;
+  transition:opacity .18s, transform .18s }
+.card:hover .pop, .card.pop-open .pop{ opacity:1; pointer-events:auto }
 
 /* button */
-.pill{
-  display:inline-block;min-width:62px;padding:.36rem .66rem;border-radius:999px;line-height:1;
-  border:1px solid var(--accent);color:var(--accent);background:#fff;text-decoration:none;
-  font-size:.92rem;font-weight:700;white-space:nowrap;box-shadow:0 2px 0 rgba(103,167,186,.08);
-  transition:background .12s, transform .06s;
-}
+.pill{ display:inline-block; min-width:62px; padding:.36rem .66rem; border-radius:999px; line-height:1; border:1px solid var(--accent);
+  color:var(--accent); background:#fff; text-decoration:none; font-size:.92rem; font-weight:700; white-space:nowrap; box-shadow:0 2px 0 rgba(103,167,186,.08);
+  transition:background .12s, transform .06s }
 .pill:hover{ background:rgba(103,167,186,.12) }
 .pill:active{ transform:translateY(1px) }
 
 /* name */
-.name{ margin: 18px 0 4px; font-weight:700; font-size:1.00rem; }
-.name a{ color:#111; text-decoration:none; }
+.name{ margin:18px 0 4px; font-weight:700; font-size:1.00rem }
+.name a{ color:#111; text-decoration:none }
 .name a:focus-visible{ outline:2px solid var(--accent) }
 
 /* footer */
-footer{margin:28px 0 0; color:#666; font-size:.9rem}
+footer{ margin:28px 0 0; color:#666; font-size:.9rem }
 </style>
 </head>
 <body>
@@ -142,7 +105,7 @@ footer{margin:28px 0 0; color:#666; font-size:.9rem}
 <script>
 /* ===== 設定 ===== */
 const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLr1090BcgO8C08pdp3UHuN73zUFB68OyW47BSihAvvVxbwDtMBwK0st9tJpg8nqpNTR0m4QHjcVs4/pub?gid=0&single=true&output=csv";
+  "https://docs.google.com/spreadsheets/d/1ommdqqp_b1cM439cTK3UekX-ADrla8ScEyjnnSJ14EY/gviz/tq?tqx=out:csv&gid=0";
 
 /* あなたの JSONP カウンターAPI（/exec） */
 const COUNTER_API = "https://script.google.com/macros/s/AKfycbyp1U_pWMvHR9b1OaDkeA4WlAsfXK5uJoTyJLkDowRphl9CTruVkVYSi1iJ2ewrubr9/exec";
@@ -175,7 +138,6 @@ async function loadCSV(url){
   const rawHeader = lines[0].split(CSV_SPLIT).map(stripQuotes);
   console.info('[CSV header]', rawHeader);
 
-  // 列順が「アイコン/名前/ツイッター/作品/感想」で来る前提（スプレッドシートの並びと一致）
   const headerMap = {アイコン:0, 名前:1, ツイッター:2, 作品:3, 感想:4};
 
   const rows = [];
@@ -225,9 +187,10 @@ function makeCard({アイコン, 名前, ツイッター, 作品, 感想}){
   card.appendChild(name);
 
   // モバイル：タップで開閉
-  iconWrap.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); card.classList.toggle('pop-open'); });
+  const toggle = (e)=>{ e.preventDefault(); e.stopPropagation(); card.classList.toggle('pop-open'); };
+  iconWrap.addEventListener('click', toggle);
   iconWrap.tabIndex = 0;
-  iconWrap.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); card.classList.toggle('pop-open'); }});
+  iconWrap.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ toggle(e); }});
   document.addEventListener('click', (e)=>{ if(!card.contains(e.target)) card.classList.remove('pop-open'); });
 
   return card;
@@ -252,8 +215,7 @@ function jsonp(url){
 
 async function updateCounter(rows){
   if (COUNTER_FIXED && /^\d{6}$/.test(COUNTER_FIXED)) {
-    setCountText(Number(COUNTER_FIXED));
-    return;
+    setCountText(Number(COUNTER_FIXED)); return;
   }
   try{
     const getData = await jsonp(`${COUNTER_API}?action=get`);
